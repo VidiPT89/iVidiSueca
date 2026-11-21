@@ -1,0 +1,608 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		02619AF87A3A35870D98BCB1 /* TrickResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17245AA96D1D6D6910BE9B58 /* TrickResolver.swift */; };
+		06D69CBDBAC0A2DC73BEF986 /* ScoreboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 029DADA589962DD1B2CE6001 /* ScoreboardView.swift */; };
+		23699460DF0827A4A6207504 /* TrickHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98867E6545FC866E6CC3238B /* TrickHistoryView.swift */; };
+		3534DA3197E70874B39B7152 /* CardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDE547FBEBAD9E7F63FE8100 /* CardView.swift */; };
+		3EE7EB0335EABBE7F0156619 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A66024F59CAA232D3D29F6F5 /* RootView.swift */; };
+		417489159901F9F4F0DB4B84 /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C19B00D433EC98FB2DDB6DF /* GameView.swift */; };
+		552F529F0A3DEA117FAF1035 /* MenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FB3DAB185F3794FF1C0E7E9 /* MenuView.swift */; };
+		570AA5406CA13AB59E27EFA6 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = AF14A20F42D1F32B7BCC63EA /* PrivacyInfo.xcprivacy */; };
+		5AB11A69DA99E8F732B3D253 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8C4977807590A9FD68990BBC /* Assets.xcassets */; };
+		5B503B8B5688EABB25514241 /* SoundPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 406C3581C7BA4D7076EC9035 /* SoundPlayer.swift */; };
+		624796D2F11024638D9C1566 /* DeckBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDCCE45970393631F92A781E /* DeckBuilder.swift */; };
+		6AA836CAECBB7C500CBF0014 /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E663B8C8E754E5B4B2B94A41 /* SettingsViewModel.swift */; };
+		85EB630FDE695192C22CC982 /* DealerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16BBB57E7DA896E819BF749A /* DealerService.swift */; };
+		8D623B389A54B3950A6C68DB /* iVidiSuecaApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 314B113EC91A02561CAADBAF /* iVidiSuecaApp.swift */; };
+		979ED32D368DBFBD1C08676C /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43433753B478DC5F855A370E /* Player.swift */; };
+		9B761E638D2B65C96C65916F /* RulesEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBA63CC51003548AF9ECE5E2 /* RulesEngine.swift */; };
+		9E6866D8A5C1F2A6449558E0 /* Trick.swift in Sources */ = {isa = PBXBuildFile; fileRef = 901EB81DF08454A1104A0BED /* Trick.swift */; };
+		A86C7BE2EBC5F9AAAA3FF01E /* ScoreCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B631DC200C7115416AD2FDE /* ScoreCalculator.swift */; };
+		A8A3EACD145F38E99CAFFB25 /* LocalizationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 621BFDC57635AE5B1E36DCAD /* LocalizationManager.swift */; };
+		B5CABBE596DD01970CD0142F /* HardBotStrategy.swift in Sources */ = {isa = PBXBuildFile; fileRef = B918E15B6B6ABA1F5FCB168B /* HardBotStrategy.swift */; };
+		BB08B9991B38966C10C85A4A /* EasyBotStrategy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 873DF80C3FA0385113A9ED94 /* EasyBotStrategy.swift */; };
+		BEFE21E94EC75C55581CA7CE /* StoreScreenshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18C3002ABE5D60BEC212E6AE /* StoreScreenshotTests.swift */; };
+		C23B31FE1409395A8334C553 /* DealingOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72950E62572FFE14C5247BAB /* DealingOverlayView.swift */; };
+		C2661B28F5BAC9F82AEFD896 /* Color+Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06E1E31C679F1639A0FFB443 /* Color+Theme.swift */; };
+		C8CA30C6872798A299713F85 /* MediumBotStrategy.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEB27767421499F397971720 /* MediumBotStrategy.swift */; };
+		CC46EB1E993F8D6712EF6C4C /* MatchStats.swift in Sources */ = {isa = PBXBuildFile; fileRef = 975F6B5682F006B297ED9D11 /* MatchStats.swift */; };
+		D118A535F7799647C7FF7639 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75EEC5C5D9DBA08D7D1EB192 /* SettingsView.swift */; };
+		E13499F197CBE122930FDA0A /* SplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11F0BD228EAF9C7D9336AFF0 /* SplashView.swift */; };
+		E1A18278947F02851FBC8246 /* AboutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81CDA3E929BBA6811A1A2C87 /* AboutView.swift */; };
+		E1FB9E39BC7CF5A24EE71C86 /* Card.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4D1E108CB10ED54DDC61292 /* Card.swift */; };
+		E6DCFE1BF415D549858BB6F1 /* GameLayoutUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CA6979D0A89848826212884 /* GameLayoutUITests.swift */; };
+		E91CA694FBEC5856D3FA87AA /* GameEndView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 490BA1331CA0E00FD1DA89A3 /* GameEndView.swift */; };
+		E9BAB7D7B5C17A4E1721C748 /* BotStrategy.swift in Sources */ = {isa = PBXBuildFile; fileRef = F66D1AF065139E661F488773 /* BotStrategy.swift */; };
+		F6891A6ACE9C079CFB0BECF8 /* GameViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD0A6D114D34990F3271462B /* GameViewModel.swift */; };
+		F7AB2205FA6A6CC18CB3AF00 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 54F5F681F1841B6185170F0C /* Localizable.strings */; };
+		FFF0C856FF3D354FE5ABCFCE /* RulesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BD4361D539399D83AFF51AF /* RulesView.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		029DADA589962DD1B2CE6001 /* ScoreboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreboardView.swift; sourceTree = "<group>"; };
+		06E1E31C679F1639A0FFB443 /* Color+Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Theme.swift"; sourceTree = "<group>"; };
+		0FB3DAB185F3794FF1C0E7E9 /* MenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuView.swift; sourceTree = "<group>"; };
+		11F0BD228EAF9C7D9336AFF0 /* SplashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashView.swift; sourceTree = "<group>"; };
+		16BBB57E7DA896E819BF749A /* DealerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DealerService.swift; sourceTree = "<group>"; };
+		17245AA96D1D6D6910BE9B58 /* TrickResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrickResolver.swift; sourceTree = "<group>"; };
+		18C3002ABE5D60BEC212E6AE /* StoreScreenshotTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreScreenshotTests.swift; sourceTree = "<group>"; };
+		1C19B00D433EC98FB2DDB6DF /* GameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameView.swift; sourceTree = "<group>"; };
+		314B113EC91A02561CAADBAF /* iVidiSuecaApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iVidiSuecaApp.swift; sourceTree = "<group>"; };
+		406C3581C7BA4D7076EC9035 /* SoundPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundPlayer.swift; sourceTree = "<group>"; };
+		43433753B478DC5F855A370E /* Player.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
+		490BA1331CA0E00FD1DA89A3 /* GameEndView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameEndView.swift; sourceTree = "<group>"; };
+		5BD4361D539399D83AFF51AF /* RulesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RulesView.swift; sourceTree = "<group>"; };
+		5CA6979D0A89848826212884 /* GameLayoutUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameLayoutUITests.swift; sourceTree = "<group>"; };
+		621BFDC57635AE5B1E36DCAD /* LocalizationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalizationManager.swift; sourceTree = "<group>"; };
+		72950E62572FFE14C5247BAB /* DealingOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DealingOverlayView.swift; sourceTree = "<group>"; };
+		75EEC5C5D9DBA08D7D1EB192 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		7B631DC200C7115416AD2FDE /* ScoreCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreCalculator.swift; sourceTree = "<group>"; };
+		81CDA3E929BBA6811A1A2C87 /* AboutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutView.swift; sourceTree = "<group>"; };
+		873DF80C3FA0385113A9ED94 /* EasyBotStrategy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EasyBotStrategy.swift; sourceTree = "<group>"; };
+		8C4977807590A9FD68990BBC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		901EB81DF08454A1104A0BED /* Trick.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Trick.swift; sourceTree = "<group>"; };
+		975F6B5682F006B297ED9D11 /* MatchStats.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchStats.swift; sourceTree = "<group>"; };
+		98867E6545FC866E6CC3238B /* TrickHistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrickHistoryView.swift; sourceTree = "<group>"; };
+		9A127FE05DB71D82A5848229 /* pt-PT */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-PT"; path = "pt-PT.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		A66024F59CAA232D3D29F6F5 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		A8CE4F66680C1E041DF49361 /* iVidiSueca.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = iVidiSueca.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		AD0A6D114D34990F3271462B /* GameViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewModel.swift; sourceTree = "<group>"; };
+		AF14A20F42D1F32B7BCC63EA /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		B918E15B6B6ABA1F5FCB168B /* HardBotStrategy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HardBotStrategy.swift; sourceTree = "<group>"; };
+		BC7A193B62EAEC1BE60692F2 /* iVidiSuecaUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = iVidiSuecaUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		BDCCE45970393631F92A781E /* DeckBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeckBuilder.swift; sourceTree = "<group>"; };
+		BEB27767421499F397971720 /* MediumBotStrategy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediumBotStrategy.swift; sourceTree = "<group>"; };
+		C4D1E108CB10ED54DDC61292 /* Card.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Card.swift; sourceTree = "<group>"; };
+		D58CDE95B70856B2E4CA9EC0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		D79C9E17F1C9F78255B01BB7 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		E663B8C8E754E5B4B2B94A41 /* SettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
+		EBA63CC51003548AF9ECE5E2 /* RulesEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RulesEngine.swift; sourceTree = "<group>"; };
+		EDE547FBEBAD9E7F63FE8100 /* CardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardView.swift; sourceTree = "<group>"; };
+		F66D1AF065139E661F488773 /* BotStrategy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BotStrategy.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		22DDE824017F6D05894A921E = {
+			isa = PBXGroup;
+			children = (
+				5FEDFA4422A6E0968DD1DAC5 /* iVidiSueca */,
+				B46D125B596DC275753359B9 /* iVidiSuecaUITests */,
+				7A33585EC12D02653123065C /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		476C8528F907B5E8F7EAC297 /* Engine */ = {
+			isa = PBXGroup;
+			children = (
+				16BBB57E7DA896E819BF749A /* DealerService.swift */,
+				BDCCE45970393631F92A781E /* DeckBuilder.swift */,
+				EBA63CC51003548AF9ECE5E2 /* RulesEngine.swift */,
+				7B631DC200C7115416AD2FDE /* ScoreCalculator.swift */,
+				17245AA96D1D6D6910BE9B58 /* TrickResolver.swift */,
+			);
+			path = Engine;
+			sourceTree = "<group>";
+		};
+		476CF9CF0F732786B05E6677 /* AI */ = {
+			isa = PBXGroup;
+			children = (
+				F66D1AF065139E661F488773 /* BotStrategy.swift */,
+				873DF80C3FA0385113A9ED94 /* EasyBotStrategy.swift */,
+				B918E15B6B6ABA1F5FCB168B /* HardBotStrategy.swift */,
+				BEB27767421499F397971720 /* MediumBotStrategy.swift */,
+			);
+			path = AI;
+			sourceTree = "<group>";
+		};
+		5FEDFA4422A6E0968DD1DAC5 /* iVidiSueca */ = {
+			isa = PBXGroup;
+			children = (
+				D58CDE95B70856B2E4CA9EC0 /* Info.plist */,
+				314B113EC91A02561CAADBAF /* iVidiSuecaApp.swift */,
+				476CF9CF0F732786B05E6677 /* AI */,
+				476C8528F907B5E8F7EAC297 /* Engine */,
+				BBBD2E3D86FAD00652F44FCD /* Localization */,
+				6899B65C8CAD5A05BA5AF014 /* Models */,
+				F08A984E43B5DB854FFE4BE6 /* Resources */,
+				7FB1C4F0E3813B7F1143E466 /* ViewModels */,
+				E5B627826F85590CEDD510A0 /* Views */,
+			);
+			path = iVidiSueca;
+			sourceTree = "<group>";
+		};
+		6899B65C8CAD5A05BA5AF014 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				C4D1E108CB10ED54DDC61292 /* Card.swift */,
+				975F6B5682F006B297ED9D11 /* MatchStats.swift */,
+				43433753B478DC5F855A370E /* Player.swift */,
+				901EB81DF08454A1104A0BED /* Trick.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		7A33585EC12D02653123065C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A8CE4F66680C1E041DF49361 /* iVidiSueca.app */,
+				BC7A193B62EAEC1BE60692F2 /* iVidiSuecaUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		7FB1C4F0E3813B7F1143E466 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				AD0A6D114D34990F3271462B /* GameViewModel.swift */,
+				E663B8C8E754E5B4B2B94A41 /* SettingsViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		B46D125B596DC275753359B9 /* iVidiSuecaUITests */ = {
+			isa = PBXGroup;
+			children = (
+				5CA6979D0A89848826212884 /* GameLayoutUITests.swift */,
+				18C3002ABE5D60BEC212E6AE /* StoreScreenshotTests.swift */,
+			);
+			path = iVidiSuecaUITests;
+			sourceTree = "<group>";
+		};
+		BBBD2E3D86FAD00652F44FCD /* Localization */ = {
+			isa = PBXGroup;
+			children = (
+				621BFDC57635AE5B1E36DCAD /* LocalizationManager.swift */,
+				54F5F681F1841B6185170F0C /* Localizable.strings */,
+			);
+			path = Localization;
+			sourceTree = "<group>";
+		};
+		E5B627826F85590CEDD510A0 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				81CDA3E929BBA6811A1A2C87 /* AboutView.swift */,
+				EDE547FBEBAD9E7F63FE8100 /* CardView.swift */,
+				72950E62572FFE14C5247BAB /* DealingOverlayView.swift */,
+				490BA1331CA0E00FD1DA89A3 /* GameEndView.swift */,
+				1C19B00D433EC98FB2DDB6DF /* GameView.swift */,
+				0FB3DAB185F3794FF1C0E7E9 /* MenuView.swift */,
+				A66024F59CAA232D3D29F6F5 /* RootView.swift */,
+				5BD4361D539399D83AFF51AF /* RulesView.swift */,
+				029DADA589962DD1B2CE6001 /* ScoreboardView.swift */,
+				75EEC5C5D9DBA08D7D1EB192 /* SettingsView.swift */,
+				11F0BD228EAF9C7D9336AFF0 /* SplashView.swift */,
+				98867E6545FC866E6CC3238B /* TrickHistoryView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		F08A984E43B5DB854FFE4BE6 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				8C4977807590A9FD68990BBC /* Assets.xcassets */,
+				06E1E31C679F1639A0FFB443 /* Color+Theme.swift */,
+				AF14A20F42D1F32B7BCC63EA /* PrivacyInfo.xcprivacy */,
+				406C3581C7BA4D7076EC9035 /* SoundPlayer.swift */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		65D2C81C49DC6F2C21B43999 /* iVidiSueca */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9DCD8707126270475E8CEEFB /* Build configuration list for PBXNativeTarget "iVidiSueca" */;
+			buildPhases = (
+				13D3CCA18917C2866A6271F0 /* Sources */,
+				1A18719530174B46841A2718 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = iVidiSueca;
+			packageProductDependencies = (
+			);
+			productName = iVidiSueca;
+			productReference = A8CE4F66680C1E041DF49361 /* iVidiSueca.app */;
+			productType = "com.apple.product-type.application";
+		};
+		F80FC5767E63AEA51B158EE1 /* iVidiSuecaUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 51EB386B17E52AE3E82A5E19 /* Build configuration list for PBXNativeTarget "iVidiSuecaUITests" */;
+			buildPhases = (
+				021B51D21A2C5BDFA4765542 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = iVidiSuecaUITests;
+			packageProductDependencies = (
+			);
+			productName = iVidiSuecaUITests;
+			productReference = BC7A193B62EAEC1BE60692F2 /* iVidiSuecaUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		9657F89FE1B6B67066B05075 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					65D2C81C49DC6F2C21B43999 = {
+						DevelopmentTeam = S769436W24;
+					};
+					F80FC5767E63AEA51B158EE1 = {
+						DevelopmentTeam = S769436W24;
+						TestTargetID = 65D2C81C49DC6F2C21B43999;
+					};
+				};
+			};
+			buildConfigurationList = 639EC183D7C61F94D58A0145 /* Build configuration list for PBXProject "iVidiSueca" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+				"pt-PT",
+			);
+			mainGroup = 22DDE824017F6D05894A921E;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 7A33585EC12D02653123065C /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				65D2C81C49DC6F2C21B43999 /* iVidiSueca */,
+				F80FC5767E63AEA51B158EE1 /* iVidiSuecaUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		1A18719530174B46841A2718 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5AB11A69DA99E8F732B3D253 /* Assets.xcassets in Resources */,
+				F7AB2205FA6A6CC18CB3AF00 /* Localizable.strings in Resources */,
+				570AA5406CA13AB59E27EFA6 /* PrivacyInfo.xcprivacy in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		021B51D21A2C5BDFA4765542 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E6DCFE1BF415D549858BB6F1 /* GameLayoutUITests.swift in Sources */,
+				BEFE21E94EC75C55581CA7CE /* StoreScreenshotTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		13D3CCA18917C2866A6271F0 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E1A18278947F02851FBC8246 /* AboutView.swift in Sources */,
+				E9BAB7D7B5C17A4E1721C748 /* BotStrategy.swift in Sources */,
+				E1FB9E39BC7CF5A24EE71C86 /* Card.swift in Sources */,
+				3534DA3197E70874B39B7152 /* CardView.swift in Sources */,
+				C2661B28F5BAC9F82AEFD896 /* Color+Theme.swift in Sources */,
+				85EB630FDE695192C22CC982 /* DealerService.swift in Sources */,
+				C23B31FE1409395A8334C553 /* DealingOverlayView.swift in Sources */,
+				624796D2F11024638D9C1566 /* DeckBuilder.swift in Sources */,
+				BB08B9991B38966C10C85A4A /* EasyBotStrategy.swift in Sources */,
+				E91CA694FBEC5856D3FA87AA /* GameEndView.swift in Sources */,
+				417489159901F9F4F0DB4B84 /* GameView.swift in Sources */,
+				F6891A6ACE9C079CFB0BECF8 /* GameViewModel.swift in Sources */,
+				B5CABBE596DD01970CD0142F /* HardBotStrategy.swift in Sources */,
+				A8A3EACD145F38E99CAFFB25 /* LocalizationManager.swift in Sources */,
+				CC46EB1E993F8D6712EF6C4C /* MatchStats.swift in Sources */,
+				C8CA30C6872798A299713F85 /* MediumBotStrategy.swift in Sources */,
+				552F529F0A3DEA117FAF1035 /* MenuView.swift in Sources */,
+				979ED32D368DBFBD1C08676C /* Player.swift in Sources */,
+				3EE7EB0335EABBE7F0156619 /* RootView.swift in Sources */,
+				9B761E638D2B65C96C65916F /* RulesEngine.swift in Sources */,
+				FFF0C856FF3D354FE5ABCFCE /* RulesView.swift in Sources */,
+				A86C7BE2EBC5F9AAAA3FF01E /* ScoreCalculator.swift in Sources */,
+				06D69CBDBAC0A2DC73BEF986 /* ScoreboardView.swift in Sources */,
+				D118A535F7799647C7FF7639 /* SettingsView.swift in Sources */,
+				6AA836CAECBB7C500CBF0014 /* SettingsViewModel.swift in Sources */,
+				5B503B8B5688EABB25514241 /* SoundPlayer.swift in Sources */,
+				E13499F197CBE122930FDA0A /* SplashView.swift in Sources */,
+				9E6866D8A5C1F2A6449558E0 /* Trick.swift in Sources */,
+				23699460DF0827A4A6207504 /* TrickHistoryView.swift in Sources */,
+				02619AF87A3A35870D98BCB1 /* TrickResolver.swift in Sources */,
+				8D623B389A54B3950A6C68DB /* iVidiSuecaApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		54F5F681F1841B6185170F0C /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				D79C9E17F1C9F78255B01BB7 /* en */,
+				9A127FE05DB71D82A5848229 /* pt-PT */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		05B92BF985BB79E7A95D88B0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 2;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_LANGUAGE = en;
+				DEVELOPMENT_TEAM = S769436W24;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.9;
+			};
+			name = Release;
+		};
+		3936B023E60AF55ED3E613B3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = dev.ividi.iVidiSuecaUITests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = iVidiSueca;
+			};
+			name = Release;
+		};
+		3AC5DF27EA88DA292E2B265F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = iVidiSueca/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = dev.ividi.iSueca;
+				PRODUCT_NAME = iVidiSueca;
+				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		647E944EE3EAE2F7369C2330 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = dev.ividi.iVidiSuecaUITests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = iVidiSueca;
+			};
+			name = Debug;
+		};
+		DEF33137E65088766053E5F6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 2;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_LANGUAGE = en;
+				DEVELOPMENT_TEAM = S769436W24;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.9;
+			};
+			name = Debug;
+		};
+		F9D64D4575E2C5387AED50B2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = iVidiSueca/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = dev.ividi.iSueca;
+				PRODUCT_NAME = iVidiSueca;
+				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		51EB386B17E52AE3E82A5E19 /* Build configuration list for PBXNativeTarget "iVidiSuecaUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				647E944EE3EAE2F7369C2330 /* Debug */,
+				3936B023E60AF55ED3E613B3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		639EC183D7C61F94D58A0145 /* Build configuration list for PBXProject "iVidiSueca" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DEF33137E65088766053E5F6 /* Debug */,
+				05B92BF985BB79E7A95D88B0 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		9DCD8707126270475E8CEEFB /* Build configuration list for PBXNativeTarget "iVidiSueca" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F9D64D4575E2C5387AED50B2 /* Debug */,
+				3AC5DF27EA88DA292E2B265F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 9657F89FE1B6B67066B05075 /* Project object */;
+}

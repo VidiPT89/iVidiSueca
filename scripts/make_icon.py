@@ -1,4 +1,4 @@
-"""Builds the 1024x1024 App Store icon from docs/iSueca_logo.jpeg.
+"""Builds the 1024x1024 App Store icon from docs/iVidiSueca_logo.jpeg.
 
 The logo arrives as a mock-up: a rounded navy card with a gold frame on a white
 background. iOS applies its own mask, so we keep only the navy card, square it,
@@ -8,9 +8,9 @@ import sys
 from collections import deque
 from PIL import Image, ImageFilter
 
-SRC = "docs/iSueca_logo.jpeg"
-OUT = "iSueca/Resources/Assets.xcassets/AppIcon.appiconset/icon-1024.png"
-LOGO_OUT = "iSueca/Resources/Assets.xcassets/AppLogo.imageset/AppLogo.png"
+SRC = "docs/iVidiSueca_logo.jpeg"
+OUT = "iVidiSueca/Resources/Assets.xcassets/AppIcon.appiconset/icon-1024.png"
+LOGO_OUT = "iVidiSueca/Resources/Assets.xcassets/AppLogo.imageset/AppLogo.png"
 
 
 def lum(p):

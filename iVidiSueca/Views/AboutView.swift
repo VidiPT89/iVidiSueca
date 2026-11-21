@@ -33,7 +33,7 @@ struct AboutView: View {
                             linkRow(icon: "chevron.left.slash.chevron.right", title: L.t("about.github"), value: "VidiPT89")
                         }
                     }
-                    if let privacyURL = URL(string: "https://github.com/VidiPT89/iSueca/blob/main/PRIVACY.md") {
+                    if let privacyURL = URL(string: "https://github.com/VidiPT89/iVidiSueca/blob/main/PRIVACY.md") {
                         Link(destination: privacyURL) {
                             linkRow(icon: "hand.raised.fill", title: L.t("about.privacy"), value: "")
                         }

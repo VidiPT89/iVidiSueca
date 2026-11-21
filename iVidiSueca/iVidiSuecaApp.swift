@@ -1,7 +1,7 @@
 import SwiftUI
 
 @main
-struct iSuecaApp: App {
+struct iVidiSuecaApp: App {
     @StateObject private var settings = SettingsViewModel()
 
     var body: some Scene {

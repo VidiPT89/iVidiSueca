@@ -1,15 +1,15 @@
-# 🎴 iSueca
+# 🎴 iVidiSueca
 
 > The classic Portuguese trick-taking card game Sueca, natively reimagined for iOS with SwiftUI.
 
-[Report Bug](https://github.com/VidiPT89/iSueca/issues) · [Request Feature](https://github.com/VidiPT89/iSueca/issues)
+[Report Bug](https://github.com/VidiPT89/iVidiSueca/issues) · [Request Feature](https://github.com/VidiPT89/iVidiSueca/issues)
 
 ## ✨ Features
 
 - ✅ Official Sueca rules — 40-card deck, 4 players in 2 partnerships, mandatory follow-suit, free cut or discard when void
 - ✅ Optional mandatory-cut house rule (Settings)
 - ✅ Full matches — hands score 1, 2 or 4 games (61+, 91+, Sueca); first team to 4 games wins
-- ✅ 1 human player + 3 bot opponents, with 3 selectable AI difficulty levels (Easy, Medium, Hard)
+- ✅ 1 human player + 3 bot opponents, with 3 selectable bot difficulty levels (Easy, Medium, Hard)
 - ✅ Card-counting bot on Hard difficulty — tracks played cards to spot master cards and safe cuts
 - ✅ Smooth, native SwiftUI animations — dealing, card play, trick collection and score count-up
 - ✅ Haptic feedback on card play; unavailable cards shake and explain why when tapped
@@ -40,12 +40,12 @@
 **Steps**
 
 ```bash
-git clone https://github.com/VidiPT89/iSueca.git
-cd iSueca
-open iSueca.xcodeproj
+git clone https://github.com/VidiPT89/iVidiSueca.git
+cd iVidiSueca
+open iVidiSueca.xcodeproj
 ```
 
-Select the `iSueca` scheme and run on a simulator or device.
+Select the `iVidiSueca` scheme and run on a simulator or device.
 
 ## 📖 Usage
 
@@ -62,17 +62,17 @@ Run the engine regression suite (rules, scoring, targeted bot decisions and 300 
 sh scripts/test-engine.sh
 ```
 
-The `iSuecaUITests` target checks all ten cards and player seats remain on screen,
+The `iVidiSuecaUITests` target checks all ten cards and player seats remain on screen,
 plays a complete hand (including a rejected tap on an unavailable card), deals the next hand,
 and exercises pause, resume, exit confirmation and restart.
 Run it with Product → Test in Xcode on an iPhone or iPad simulator.
 
 The Xcode project is generated from `project.yml`; after adding or removing files run `xcodegen generate`.
 
-Build and run the `iSueca` scheme in Xcode (`⌘R`), or verify the project compiles via:
+Build and run the `iVidiSueca` scheme in Xcode (`⌘R`), or verify the project compiles via:
 
 ```bash
-xcodebuild -project iSueca.xcodeproj -scheme iSueca -destination 'generic/platform=iOS Simulator' build
+xcodebuild -project iVidiSueca.xcodeproj -scheme iVidiSueca -destination 'generic/platform=iOS Simulator' build
 ```
 
 ## 📄 License
@@ -88,7 +88,7 @@ Distributed under the MIT License. See [LICENSE](LICENSE) for details.
 
 ## 🤝 Contributing
 
-Contributions, issues and feature requests are welcome. Feel free to check the [issues page](https://github.com/VidiPT89/iSueca/issues).
+Contributions, issues and feature requests are welcome. Feel free to check the [issues page](https://github.com/VidiPT89/iVidiSueca/issues).
 
 ---
 

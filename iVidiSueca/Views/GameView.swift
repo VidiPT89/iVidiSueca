@@ -123,7 +123,7 @@ struct GameView: View {
                 if viewModel.currentTrick.cardsPlayed.isEmpty {
                     VStack(spacing: 5) {
                         Image(systemName: "suit.spade").font(.system(size: 30, weight: .ultraLight))
-                        Text("iSueca").font(.system(.title3, design: .serif)).tracking(2)
+                        Text("iVidiSueca").font(.system(.title3, design: .serif)).tracking(2)
                     }
                     .foregroundStyle(.white.opacity(0.18))
                 }
