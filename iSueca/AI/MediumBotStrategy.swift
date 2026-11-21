@@ -1,65 +1,12 @@
 import Foundation
 
-/// Simple heuristics: keeps high trumps in reserve, cuts only when it pays off,
-/// tries not to burn an Ace or 7 for nothing, and helps a winning partner cheaply.
+/// Simple heuristics: leads low side suits, cuts only to win, never burns an Ace or 7
+/// for nothing, and loads points onto a trick its team has already won.
 struct MediumBotStrategy: BotStrategy {
     func chooseCard(from legalMoves: [Card], hand: [Card], context: BotContext) -> Card {
-        let trick = context.currentTrick
-
-        if trick.cardsPlayed.isEmpty {
-            return chooseLead(from: legalMoves, hand: hand, context: context)
+        guard !context.currentTrick.cardsPlayed.isEmpty else {
+            return BotHeuristics.discard(from: legalMoves, trump: context.trump)
         }
-
-        guard let leadSuit = trick.leadSuit else {
-            return legalMoves.min { $0.pointValue < $1.pointValue } ?? legalMoves[0]
-        }
-
-        let followingSuit = legalMoves.contains { $0.suit == leadSuit }
-        let currentWinner = TrickResolver.winner(of: trick, trump: context.trump)
-        let partnerWinning = currentWinner.team == context.position.team
-
-        if followingSuit {
-            let sameSuit = legalMoves.filter { $0.suit == leadSuit }
-            if partnerWinning {
-                return sameSuit.min { $0.pointValue < $1.pointValue } ?? sameSuit[0]
-            }
-            let currentWinningCard = trick.cardsPlayed.first { $0.position == currentWinner }!.card
-            let winningOptions = sameSuit.filter { $0.suit == currentWinningCard.suit && $0.rank > currentWinningCard.rank }
-            if let cheapestWin = winningOptions.min(by: { $0.pointValue < $1.pointValue }) {
-                return cheapestWin
-            }
-            return sameSuit.min { $0.pointValue < $1.pointValue } ?? sameSuit[0]
-        }
-
-        let trumps = legalMoves.filter { $0.suit == context.trump }
-        if !trumps.isEmpty {
-            if partnerWinning && trick.cardsPlayed.count == 3 {
-                return legalMoves.max { $0.pointValue < $1.pointValue }!
-            }
-            if !partnerWinning {
-                let winningTrumps = trumps.filter { card in
-                    var trial = trick
-                    trial.play(card, by: context.position)
-                    return TrickResolver.winner(of: trial, trump: context.trump) == context.position
-                }
-                return winningTrumps.min { $0.rank < $1.rank }
-                    ?? legalMoves.min { $0.pointValue < $1.pointValue }!
-            }
-            return chooseDiscard(from: legalMoves)
-        }
-
-        return chooseDiscard(from: legalMoves)
-    }
-
-    private func chooseLead(from legalMoves: [Card], hand: [Card], context: BotContext) -> Card {
-        let nonTrump = legalMoves.filter { $0.suit != context.trump }
-        let pool = nonTrump.isEmpty ? legalMoves : nonTrump
-        let safe = pool.filter { $0.rank != .ace && $0.rank != .seven }
-        return (safe.isEmpty ? pool : safe).min { $0.pointValue < $1.pointValue } ?? pool[0]
-    }
-
-    private func chooseDiscard(from legalMoves: [Card]) -> Card {
-        let safe = legalMoves.filter { $0.rank != .ace && $0.rank != .seven }
-        return (safe.isEmpty ? legalMoves : safe).min { $0.pointValue < $1.pointValue } ?? legalMoves[0]
+        return BotHeuristics.respond(from: legalMoves, context: context)
     }
 }

@@ -1,5 +1,4 @@
 import Foundation
-import Combine
 import SwiftUI
 import UIKit
 
@@ -22,6 +21,10 @@ struct HandResult: Equatable {
     let teamBPoints: Int
     let winner: Team?
     let wasSueca: Bool
+    /// Games this hand added to the winner's match tally (0 for a 60–60 draw).
+    let gamesAwarded: Int
+    /// Set once a team reaches `ScoreCalculator.gamesToWinMatch`.
+    let matchWinner: Team?
 }
 
 @MainActor
@@ -30,22 +33,26 @@ final class GameViewModel: ObservableObject {
     @Published private(set) var handsByPosition: [PlayerPosition: [Card]] = [:]
     @Published private(set) var trumpSuit: Suit = .spades
     @Published private(set) var trumpCard: Card?
-    @Published private(set) var currentTrick: Trick = Trick()
-    @Published private(set) var teamAPoints: Int = 0
-    @Published private(set) var teamBPoints: Int = 0
+    @Published private(set) var currentTrick = Trick()
+    @Published private(set) var teamAPoints = 0
+    @Published private(set) var teamBPoints = 0
+    @Published private(set) var teamAGames = 0
+    @Published private(set) var teamBGames = 0
     @Published private(set) var currentPlayerTurn: PlayerPosition = .south
     @Published private(set) var lastTrickWinner: PlayerPosition?
     @Published private(set) var handResult: HandResult?
-    @Published private(set) var tricksWonCount: [PlayerPosition: Int] = [:]
     @Published private(set) var completedTricks: [Trick] = []
     @Published private(set) var dealingStage: DealingStage?
-    @Published var invalidMoveAttempt: Card?
-
+    /// The last card the player tried to play illegally; the view shakes it.
+    @Published private(set) var rejectedCard: Card?
+    /// Bumped on every illegal attempt, so repeated taps on the same card shake it again.
+    @Published private(set) var rejectionCount = 0
     @Published private(set) var isPaused = false
-    private var pendingTask: Task<Void, Never>?
 
+    /// Every seat's real hand. `handsByPosition` lags behind it while cards are being dealt.
+    private var hands: [PlayerPosition: [Card]] = [:]
+    private var pendingTask: Task<Void, Never>?
     private var settings: SettingsViewModel?
-    private var state: GameState?
     private var dealer: PlayerPosition = .west
     private let feedback = UIImpactFeedbackGenerator(style: .light)
 
@@ -53,19 +60,32 @@ final class GameViewModel: ObservableObject {
         self.settings = settings
     }
 
+    private var forcedCut: Bool { settings?.forcedCut ?? false }
+
     var humanLegalMoves: [Card] {
-        guard let state else { return [] }
-        return RulesEngine.legalMoves(hand: state.hand(for: .south), trick: state.currentTrick, trump: state.trumpSuit)
+        guard phase == .playing else { return [] }
+        return RulesEngine.legalMoves(hand: hands[.south] ?? [], trick: currentTrick, trump: trumpSuit, forcedCut: forcedCut)
     }
 
-    func startNewGame() {
+    var isMatchOver: Bool { handResult?.matchWinner != nil }
+
+    // MARK: - Flow
+
+    func startNewMatch() {
+        teamAGames = 0
+        teamBGames = 0
         dealer = PlayerPosition.allCases.randomElement() ?? .west
         beginHand()
     }
 
-    func playAgain() {
-        dealer = dealer.next
-        beginHand()
+    /// Deals the next hand of the match, or starts a new match once one has been decided.
+    func continueAfterHand() {
+        if isMatchOver {
+            startNewMatch()
+        } else {
+            dealer = dealer.next
+            beginHand()
+        }
     }
 
     func returnToMenu() {
@@ -81,12 +101,12 @@ final class GameViewModel: ObservableObject {
     }
 
     var suggestedCard: Card? {
-        guard phase == .playing, currentPlayerTurn == .south, let state,
-              !humanLegalMoves.isEmpty else { return nil }
+        guard phase == .playing, currentPlayerTurn == .south else { return nil }
+        let legal = humanLegalMoves
+        guard !legal.isEmpty else { return nil }
         let context = BotContext(position: .south, trump: trumpSuit, currentTrick: currentTrick,
-                                 completedTricks: completedTricks, teamAPoints: teamAPoints,
-                                 teamBPoints: teamBPoints, cardsRemainingInOthersHands: state.hand(for: .south).count)
-        return HardBotStrategy().chooseCard(from: humanLegalMoves, hand: state.hand(for: .south), context: context)
+                                 completedTricks: completedTricks)
+        return HardBotStrategy().chooseCard(from: legal, hand: hands[.south] ?? [], context: context)
     }
 
     /// Pausing freezes the remaining delay, including distribution and trick collection.
@@ -103,31 +123,27 @@ final class GameViewModel: ObservableObject {
     private func beginHand() {
         pendingTask?.cancel()
         isPaused = false
-        invalidMoveAttempt = nil
-        let result = DealerService.deal(dealer: dealer)
-        let firstToPlay = dealer.next
-        let newState = GameState(players: result.players, trumpSuit: result.trumpSuit, trumpCard: result.trumpCard,
-                                  dealerPosition: dealer, firstToPlay: firstToPlay)
-        state = newState
-        trumpSuit = result.trumpSuit
+        rejectedCard = nil
+        let deal = DealerService.deal(dealer: dealer)
+        hands = deal.hands
+        trumpSuit = deal.trumpSuit
         trumpCard = nil
         currentTrick = Trick()
         teamAPoints = 0
         teamBPoints = 0
-        currentPlayerTurn = firstToPlay
+        currentPlayerTurn = dealer.next
         lastTrickWinner = nil
         handResult = nil
-        tricksWonCount = [.south: 0, .west: 0, .north: 0, .east: 0]
         completedTricks = []
         handsByPosition = [.south: [], .west: [], .north: [], .east: []]
 
         phase = .dealing
-        runDealingSequence(finalHands: result.players.mapValues { $0.hand }, trumpCard: result.trumpCard)
+        runDealingSequence(trumpCard: deal.trumpCard)
     }
 
-    private func runDealingSequence(finalHands: [PlayerPosition: [Card]], trumpCard: Card) {
+    private func runDealingSequence(trumpCard: Card) {
+        let finalHands = hands
         pendingTask = Task {
-            guard self.phase == .dealing else { return }
             withAnimation(.spring(response: 0.5, dampingFraction: 0.65)) {
                 self.dealingStage = .revealTrump
                 self.trumpCard = trumpCard
@@ -135,14 +151,12 @@ final class GameViewModel: ObservableObject {
             SoundPlayer.play(.trickWin)
             guard await self.wait(seconds: 0.9) else { return }
 
-            guard self.phase == .dealing else { return }
             withAnimation(.easeInOut(duration: 0.2)) {
                 self.dealingStage = .dealCards
             }
 
             let cardsPerHand = finalHands.values.map(\.count).max() ?? 10
             for round in 0..<cardsPerHand {
-                guard self.phase == .dealing else { return }
                 withAnimation(.easeOut(duration: 0.16)) {
                     for position in PlayerPosition.allCases {
                         guard let hand = finalHands[position], round < hand.count else { continue }
@@ -153,13 +167,11 @@ final class GameViewModel: ObservableObject {
                 guard await self.wait(seconds: 0.065) else { return }
             }
 
-            guard self.phase == .dealing else { return }
             withAnimation(.spring(response: 0.45, dampingFraction: 0.7)) {
                 self.dealingStage = .announceLeader
             }
             guard await self.wait(seconds: 1.1) else { return }
 
-            guard self.phase == .dealing else { return }
             withAnimation(.easeOut(duration: 0.25)) {
                 self.dealingStage = nil
             }
@@ -168,10 +180,13 @@ final class GameViewModel: ObservableObject {
         }
     }
 
+    // MARK: - Playing
+
     func playHumanCard(_ card: Card) {
-        guard !isPaused, phase == .playing, currentPlayerTurn == .south, let state else { return }
-        guard RulesEngine.isLegal(card, hand: state.hand(for: .south), trick: state.currentTrick, trump: state.trumpSuit) else {
-            invalidMoveAttempt = card
+        guard !isPaused, phase == .playing, currentPlayerTurn == .south else { return }
+        guard humanLegalMoves.contains(card) else {
+            rejectedCard = card
+            rejectionCount += 1
             UINotificationFeedbackGenerator().notificationOccurred(.warning)
             SoundPlayer.play(.illegalMove)
             return
@@ -180,47 +195,38 @@ final class GameViewModel: ObservableObject {
     }
 
     private func play(_ card: Card, by position: PlayerPosition) {
-        guard let state else { return }
         feedback.impactOccurred()
         SoundPlayer.play(.cardPlay)
-        state.remove(card, from: position)
-        state.currentTrick.play(card, by: position)
-        handsByPosition[position] = state.hand(for: position)
-        invalidMoveAttempt = nil
-        currentTrick = state.currentTrick
+        hands[position]?.removeAll { $0.id == card.id }
+        handsByPosition[position] = hands[position]
+        currentTrick.play(card, by: position)
+        rejectedCard = nil
 
-        if state.currentTrick.isComplete {
+        if currentTrick.isComplete {
             resolveTrick()
         } else {
             currentPlayerTurn = position.next
-            state.currentPlayerTurn = currentPlayerTurn
             advanceIfNeeded()
         }
     }
 
     private func resolveTrick() {
-        guard let state else { return }
         phase = .trickEnd
-        let winner = TrickResolver.winner(of: state.currentTrick, trump: state.trumpSuit)
-        ScoreCalculator.addPoints(from: state.currentTrick, winner: winner, teamAPoints: &state.teamAPoints, teamBPoints: &state.teamBPoints)
-        teamAPoints = state.teamAPoints
-        teamBPoints = state.teamBPoints
+        let winner = TrickResolver.winner(of: currentTrick, trump: trumpSuit)
+        ScoreCalculator.addPoints(from: currentTrick, winner: winner, teamAPoints: &teamAPoints, teamBPoints: &teamBPoints)
         lastTrickWinner = winner
-        tricksWonCount[winner, default: 0] += 1
-        state.currentTrick.winner = winner
-        state.completedTricks.append(state.currentTrick)
-        completedTricks = state.completedTricks
-        UINotificationFeedbackGenerator().notificationOccurred(.success)
+        var finished = currentTrick
+        finished.winner = winner
+        completedTricks.append(finished)
+        UINotificationFeedbackGenerator().notificationOccurred(winner.team == .teamA ? .success : .warning)
         SoundPlayer.play(.trickWin)
 
         pendingTask = Task {
             guard await self.wait(seconds: 0.9) else { return }
-            self.state?.currentTrick = Trick()
             self.currentTrick = Trick()
             self.currentPlayerTurn = winner
-            self.state?.currentPlayerTurn = winner
 
-            if (self.state?.completedTricks.count ?? 0) >= 10 {
+            if self.completedTricks.count >= 10 {
                 self.finishHand()
             } else {
                 self.phase = .playing
@@ -230,35 +236,45 @@ final class GameViewModel: ObservableObject {
     }
 
     private func finishHand() {
-        guard let state else { return }
-        let winner = ScoreCalculator.handWinner(teamAPoints: state.teamAPoints, teamBPoints: state.teamBPoints)
-        let wasSueca = ScoreCalculator.isSueca(teamPoints: state.teamAPoints) || ScoreCalculator.isSueca(teamPoints: state.teamBPoints)
-        let result = HandResult(teamAPoints: state.teamAPoints, teamBPoints: state.teamBPoints, winner: winner, wasSueca: wasSueca)
-        handResult = result
-        MatchStatsStore.shared.recordHandResult(humanTeamWon: winner == .teamA, wasSueca: wasSueca)
+        let winner = ScoreCalculator.handWinner(teamAPoints: teamAPoints, teamBPoints: teamBPoints)
+        let winnerPoints = winner == .teamA ? teamAPoints : winner == .teamB ? teamBPoints : 0
+        let wasSueca = ScoreCalculator.isSueca(teamPoints: winnerPoints)
+        let games = ScoreCalculator.gamesAwarded(winnerPoints: winnerPoints)
+        switch winner {
+        case .teamA: teamAGames += games
+        case .teamB: teamBGames += games
+        case nil: break
+        }
+
+        let target = ScoreCalculator.gamesToWinMatch
+        let matchWinner: Team? = teamAGames >= target ? .teamA : teamBGames >= target ? .teamB : nil
+        handResult = HandResult(teamAPoints: teamAPoints, teamBPoints: teamBPoints, winner: winner,
+                                wasSueca: wasSueca, gamesAwarded: games, matchWinner: matchWinner)
+
+        let stats = MatchStatsStore.shared
+        stats.recordHandResult(humanTeamWon: winner == .teamA, suecaByHuman: wasSueca && winner == .teamA)
+        if let matchWinner { stats.recordMatchResult(humanTeamWon: matchWinner == .teamA) }
+
         UINotificationFeedbackGenerator().notificationOccurred(winner == .teamA ? .success : .error)
         SoundPlayer.play(.handEnd)
         phase = .handEnd
     }
 
     private func advanceIfNeeded() {
-        guard phase == .playing, let state, currentPlayerTurn != .south else { return }
+        guard phase == .playing, currentPlayerTurn != .south else { return }
         let position = currentPlayerTurn
-        let difficulty = settings?.aiDifficulty ?? .normal
+        let strategy = makeBotStrategy(for: settings?.aiDifficulty ?? .normal)
         let speedRange = (settings?.aiSpeed ?? .normal).delayRange
-        let strategy = makeBotStrategy(for: difficulty)
-        let hand = state.hand(for: position)
-        let legalMoves = RulesEngine.legalMoves(hand: hand, trick: state.currentTrick, trump: state.trumpSuit)
-        let context = BotContext(position: position, trump: state.trumpSuit, currentTrick: state.currentTrick,
-                                  completedTricks: state.completedTricks, teamAPoints: state.teamAPoints,
-                                  teamBPoints: state.teamBPoints, cardsRemainingInOthersHands: hand.count)
 
         pendingTask = Task {
-            let delay = Double.random(in: speedRange)
-            guard await self.wait(seconds: delay) else { return }
+            guard await self.wait(seconds: Double.random(in: speedRange)) else { return }
             guard self.phase == .playing, self.currentPlayerTurn == position else { return }
-            let card = strategy.chooseCard(from: legalMoves, hand: hand, context: context)
-            self.play(card, by: position)
+            let hand = self.hands[position] ?? []
+            let legal = RulesEngine.legalMoves(hand: hand, trick: self.currentTrick, trump: self.trumpSuit,
+                                               forcedCut: self.forcedCut)
+            let context = BotContext(position: position, trump: self.trumpSuit, currentTrick: self.currentTrick,
+                                     completedTricks: self.completedTricks)
+            self.play(strategy.chooseCard(from: legal, hand: hand, context: context), by: position)
         }
     }
 }

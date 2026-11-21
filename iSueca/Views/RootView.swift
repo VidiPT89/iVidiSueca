@@ -20,7 +20,7 @@ struct RootView: View {
             }
             .allowsHitTesting(!showSplash)
             .accessibilityHidden(showSplash)
-            .animation(.easeInOut(duration: 0.35), value: phaseIdentifier)
+            .animation(.easeInOut(duration: 0.35), value: viewModel.phase)
             .transition(.opacity)
 
             if showSplash {
@@ -37,16 +37,6 @@ struct RootView: View {
         .preferredColorScheme(settings.theme.colorScheme)
         .onAppear {
             viewModel.configure(settings: settings)
-        }
-    }
-
-    private var phaseIdentifier: Int {
-        switch viewModel.phase {
-        case .menu: return 0
-        case .dealing: return 1
-        case .playing: return 2
-        case .trickEnd: return 3
-        case .handEnd: return 4
         }
     }
 }

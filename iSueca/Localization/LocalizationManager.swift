@@ -20,7 +20,7 @@ enum AppLanguage: String, CaseIterable, Identifiable {
 @MainActor
 final class LocalizationManager: ObservableObject {
     // Accessed from `L.t(_:)`, which is `nonisolated` so plain model types can call it synchronously.
-    nonisolated(unsafe) static let shared = MainActor.assumeIsolated { LocalizationManager() }
+    nonisolated static let shared = MainActor.assumeIsolated { LocalizationManager() }
 
     @Published var language: AppLanguage {
         didSet {
@@ -30,9 +30,8 @@ final class LocalizationManager: ObservableObject {
     }
 
     private static let storageKey = "app.language.override"
-    // `string(_:)` is called from plain, non-actor model types (e.g. `Card.accessibilityLabel`),
-    // so this state must stay safely mutable off the main actor. A lock — not `nonisolated(unsafe)` —
-    // guards it, since `didSet` (main actor) and `string(_:)` (any thread) can race otherwise.
+    // `string(_:)` is nonisolated so non-actor code such as `AppLanguage.displayName` can call it.
+    // The lock guards this state, since `didSet` (main actor) and `string(_:)` could otherwise race.
     private nonisolated(unsafe) var currentLanguage: AppLanguage = .system
     private nonisolated(unsafe) var bundle: Bundle = .main
     private nonisolated(unsafe) var cachedLanguage: AppLanguage?

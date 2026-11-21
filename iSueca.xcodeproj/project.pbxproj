@@ -20,7 +20,6 @@
 		5530A114D2FD8413CB48A1E7 /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD6861E1F1EBF30FA35F3757 /* GameView.swift */; };
 		590D1B416F7963A324994EE8 /* MatchStats.swift in Sources */ = {isa = PBXBuildFile; fileRef = 082254CA6F2957CF1B95EEC5 /* MatchStats.swift */; };
 		619339A114625B0B55C2FC60 /* EasyBotStrategy.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8A0C22FCA0651E62EE9BD0F /* EasyBotStrategy.swift */; };
-		668B2210B1C0FBBF3EA2A6F8 /* GameState.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA4D674FCC288810A12D7301 /* GameState.swift */; };
 		6EAAFA516117B6AA318FD2EE /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A2CD5410E9AB0968919447 /* SettingsViewModel.swift */; };
 		7B06F68D0457829F8D472500 /* Trick.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61C9CF2A4DE0F6E552E97352 /* Trick.swift */; };
 		7CF2C038C7D7CD50F2823535 /* ScoreboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 223051D0D0FD96B52D5B37A9 /* ScoreboardView.swift */; };
@@ -83,7 +82,6 @@
 		E02CDC2C6DA5B1C0E3A6B9EC /* Card.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Card.swift; sourceTree = "<group>"; };
 		F87589C23D648EFB8A7EB699 /* CardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardView.swift; sourceTree = "<group>"; };
 		F9619D2F543D4DE1223750E1 /* TrickResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrickResolver.swift; sourceTree = "<group>"; };
-		FA4D674FCC288810A12D7301 /* GameState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameState.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -161,7 +159,6 @@
 			isa = PBXGroup;
 			children = (
 				E02CDC2C6DA5B1C0E3A6B9EC /* Card.swift */,
-				FA4D674FCC288810A12D7301 /* GameState.swift */,
 				082254CA6F2957CF1B95EEC5 /* MatchStats.swift */,
 				64D0A3114BA86C72665D7577 /* Player.swift */,
 				61C9CF2A4DE0F6E552E97352 /* Trick.swift */,
@@ -315,7 +312,6 @@
 				BB7AC13B60DEE6053DD622FD /* DeckBuilder.swift in Sources */,
 				619339A114625B0B55C2FC60 /* EasyBotStrategy.swift in Sources */,
 				FA50F11E601EA6D5EAC916A2 /* GameEndView.swift in Sources */,
-				668B2210B1C0FBBF3EA2A6F8 /* GameState.swift in Sources */,
 				5530A114D2FD8413CB48A1E7 /* GameView.swift in Sources */,
 				0E22008BF5BBDA45CDF1A28C /* GameViewModel.swift in Sources */,
 				157DD08F9E0227B92526CEFD /* HardBotStrategy.swift in Sources */,

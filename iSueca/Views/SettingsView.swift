@@ -44,6 +44,14 @@ struct SettingsView: View {
                     .pickerStyle(.segmented)
                 }
 
+                Section {
+                    Toggle(L.t("settings.forcedCut"), isOn: $settings.forcedCut)
+                } header: {
+                    Text(L.t("settings.rules"))
+                } footer: {
+                    Text(L.t("settings.forcedCut.footer"))
+                }
+
                 Section(L.t("settings.sound")) {
                     Toggle(L.t("settings.sound"), isOn: $settings.soundEnabled)
                 }

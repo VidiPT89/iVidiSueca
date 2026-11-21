@@ -59,7 +59,6 @@
 "game.trumpRevealed" = "Trump suit";
 "game.leaderStarts" = "%@ leads the first trick";
 "game.sueca" = "Sueca! A perfect hand — all 120 points.";
-"game.playAgain" = "Play Again";
 "game.youWin" = "Your Team Wins!";
 "game.youLose" = "The Opponents Win";
 
@@ -79,7 +78,7 @@
 "rules.section.dealing.body" = "Each player receives 10 cards. The dealer's last card is revealed as the trump suit for the hand. The dealer rotates after every hand.";
 
 "rules.section.play.title" = "Playing a Trick";
-"rules.section.play.body" = "You must follow the suit that was led if you can. If you have none, you must play a trump if you have one; otherwise you may discard any card. The highest trump played wins the trick, or if no trump was played, the highest card of the led suit wins.";
+"rules.section.play.body" = "You must follow the suit that was led if you can. If you have none, you may cut with a trump or discard any other card (a mandatory-cut house rule can be enabled in Settings). The highest trump played wins the trick or, if no trump was played, the highest card of the led suit. The trick winner leads the next one.";
 
 "rules.section.winning.title" = "Winning the Hand";
 "rules.section.winning.body" = "After all 10 tricks are played, the partnership with more than 60 of the 120 points wins the hand. Winning every trick for all 120 points is called a Sueca.";
@@ -91,13 +90,12 @@
 
 /* Table guidance and controls */
 "game.round" = "Trick %d of 10";
-"game.target" = "Target: 61 points";
 "game.pause" = "Pause game";
 "game.paused" = "Game paused";
 "game.resume" = "Resume game";
-"game.leaveTitle" = "Leave this hand?";
+"game.leaveTitle" = "Leave this match?";
 "game.leave" = "Return to menu";
-"game.leaveMessage" = "Progress in this hand will be lost.";
+"game.leaveMessage" = "Progress in this match will be lost.";
 "game.cancel" = "Cancel";
 "game.trickWinner" = "%@ won · %d pts";
 "game.yourTurn" = "Your turn";
@@ -111,5 +109,26 @@
 "game.yourHand" = "Your hand";
 "game.hint" = "Hint";
 "menu.tagline" = "One table. Two teams. 120 points.";
-"game.hiddenCard" = "Face-down card";
 "game.draw" = "Draw: 60 each";
+"game.match" = "Match %d – %d · to %d";
+"game.void" = "You have no %@. You may cut with a trump or discard any other card.";
+"game.rejected" = "That card can't be played now.";
+"game.cardPlayable" = "Playable";
+"game.cardUnavailable" = "Unavailable";
+"end.handWorth.0" = "Draw: neither team scores a game.";
+"end.handWorth.1" = "This hand is worth 1 game.";
+"end.handWorth.2" = "Over 90 points: this hand is worth 2 games.";
+"end.handWorth.4" = "Sueca: this hand is worth 4 games.";
+"end.matchScore" = "Match · first to %d games";
+"end.nextHand" = "Next Hand";
+"end.newMatch" = "New Match";
+"end.matchWon" = "You Won the Match!";
+"end.matchLost" = "The Opponents Won the Match";
+"settings.rules" = "Rules";
+"settings.forcedCut" = "Mandatory cut";
+"settings.forcedCut.footer" = "House rule: a player without the suit led must play a trump if they have one. When off, the official rule applies: they may cut or discard.";
+"stats.matches" = "Matches";
+"stats.bestStreak" = "Best streak";
+"stats.suecas" = "Suecas";
+"rules.section.match.title" = "The Match";
+"rules.section.match.body" = "Each hand won scores games: 1 game for 61 to 90 points, 2 games for 91 to 119 points and 4 games for a Sueca. A 60–60 draw scores nothing. The first team to reach 4 games wins the match.";

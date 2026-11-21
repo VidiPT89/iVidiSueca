@@ -39,7 +39,7 @@ struct MenuView: View {
                 titleBlock
 
                 Button {
-                    viewModel.startNewGame()
+                    viewModel.startNewMatch()
                 } label: {
                     Label(L.t("menu.startGame"), systemImage: "play.fill")
                         .font(.headline.weight(.bold))
@@ -102,18 +102,44 @@ struct MenuView: View {
                 .multilineTextAlignment(.center)
 
             if statsStore.stats.gamesPlayed > 0 {
-                Text(String(format: L.t("stats.record"), statsStore.stats.gamesWon, statsStore.stats.gamesPlayed))
-                    .font(.footnote.weight(.semibold))
-                    .foregroundColor(.brandTextSecondary)
-                    .padding(.horizontal, 14)
-                    .padding(.vertical, 7)
-                    .background(
-                        Capsule().fill(Color.brandSurface)
-                            .shadow(color: .black.opacity(0.12), radius: 4, y: 2)
-                    )
-                    .padding(.top, 10)
+                statsPanel.padding(.top, 10)
             }
         }
+    }
+
+    private var statsPanel: some View {
+        let stats = statsStore.stats
+        return VStack(spacing: 10) {
+            Text(String(format: L.t("stats.record"), stats.gamesWon, stats.gamesPlayed))
+                .font(.footnote.weight(.semibold))
+            HStack(spacing: 0) {
+                statItem("\(stats.matchesWon)/\(stats.matchesPlayed)", L.t("stats.matches"))
+                statItem("\(stats.bestStreak)", L.t("stats.bestStreak"))
+                statItem("\(stats.suecasMade)", L.t("stats.suecas"))
+            }
+        }
+        .foregroundColor(.brandTextSecondary)
+        .padding(.horizontal, 16)
+        .padding(.vertical, 10)
+        .frame(maxWidth: 320)
+        .background(
+            RoundedRectangle(cornerRadius: 16).fill(Color.brandSurface)
+                .shadow(color: .black.opacity(0.12), radius: 4, y: 2)
+        )
+        .accessibilityElement(children: .combine)
+    }
+
+    private func statItem(_ value: String, _ title: String) -> some View {
+        VStack(spacing: 2) {
+            Text(value)
+                .font(.headline.monospacedDigit())
+                .foregroundColor(.brandTextPrimary)
+            Text(title)
+                .font(.caption2)
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
+        }
+        .frame(maxWidth: .infinity)
     }
 
     private func menuButton(_ title: String, icon: String, action: @escaping () -> Void) -> some View {

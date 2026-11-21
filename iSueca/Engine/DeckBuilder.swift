@@ -2,13 +2,7 @@ import Foundation
 
 enum DeckBuilder {
     static func fullDeck() -> [Card] {
-        var deck: [Card] = []
-        for suit in Suit.allCases {
-            for rank in Rank.allCases {
-                deck.append(Card(suit: suit, rank: rank))
-            }
-        }
-        return deck
+        Suit.allCases.flatMap { suit in Rank.allCases.map { Card(suit: suit, rank: $0) } }
     }
 
     static func shuffledDeck() -> [Card] {

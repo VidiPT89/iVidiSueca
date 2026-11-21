@@ -6,11 +6,13 @@
 
 ## ✨ Features
 
-- ✅ Full official Sueca rules — 40-card deck, 4 players in 2 partnerships, follow-suit and mandatory-cut logic
+- ✅ Official Sueca rules — 40-card deck, 4 players in 2 partnerships, mandatory follow-suit, free cut or discard when void
+- ✅ Optional mandatory-cut house rule (Settings)
+- ✅ Full matches — hands score 1, 2 or 4 games (61+, 91+, Sueca); first team to 4 games wins
 - ✅ 1 human player + 3 bot opponents, with 3 selectable AI difficulty levels (Easy, Medium, Hard)
 - ✅ Card-counting bot on Hard difficulty — tracks played cards to spot master cards and safe cuts
 - ✅ Smooth, native SwiftUI animations — dealing, card play, trick collection and score count-up
-- ✅ Haptic feedback on card play and illegal-move attempts
+- ✅ Haptic feedback on card play; unavailable cards shake and explain why when tapped
 - ✅ Felt table, readable two-row hand, illustrated court cards and live score progress
 - ✅ Contextual follow-suit guidance, legal-card controls and optional hints
 - ✅ Pause/resume, automatic pause when leaving the app, and safe return to menu
@@ -18,7 +20,7 @@
 - ✅ Runtime language switch — Português (PT-PT) and English, independent of system locale
 - ✅ Dark mode, Light mode, and System mode
 - ✅ Custom color identity inspired by [ividi.dev](https://ividi.dev/) — burnt orange, amber and near-black
-- ✅ In-app rules reference and match statistics
+- ✅ In-app rules reference and statistics — hands, matches, best streak and suecas
 
 ## 🛠️ Tech Stack
 
@@ -47,22 +49,25 @@ Select the `iSueca` scheme and run on a simulator or device.
 
 ## 📖 Usage
 
-Launch the app, tap Play, and take on 3 bot opponents in a full hand of Sueca. Your partner sits opposite
-you; win tricks together to pass 60 of the 120 points in play. Adjust bot difficulty and speed, switch
+Launch the app, tap Play, and take on 3 bot opponents in a match of Sueca. Your partner sits opposite
+you; win tricks together to pass 60 of the 120 points in play. Each hand won adds 1 game (2 with more than
+90 points, 4 for a Sueca), and the first team to 4 games takes the match. Adjust bot difficulty and speed, switch
 language and appearance, and review the rules at any time from Settings and the main menu.
 
 ## 🧪 Testing
 
-Run the engine regression suite (300 complete hands and targeted bot decisions):
+Run the engine regression suite (rules, scoring, targeted bot decisions and 300 complete hands under both cut rules):
 
 ```bash
 sh scripts/test-engine.sh
 ```
 
 The `iSuecaUITests` target checks all ten cards and player seats remain on screen,
-plays a complete hand, and exercises pause, resume, exit confirmation and restart.
+plays a complete hand (including a rejected tap on an unavailable card), deals the next hand,
+and exercises pause, resume, exit confirmation and restart.
 Run it with Product → Test in Xcode on an iPhone or iPad simulator.
 
+The Xcode project is generated from `project.yml`; after adding or removing files run `xcodegen generate`.
 
 Build and run the `iSueca` scheme in Xcode (`⌘R`), or verify the project compiles via:
 

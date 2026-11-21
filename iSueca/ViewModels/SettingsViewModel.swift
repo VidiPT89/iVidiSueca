@@ -22,22 +22,24 @@ final class SettingsViewModel: ObservableObject {
         }
     }
 
+    /// House rule: a player without the suit led must play a trump if they have one.
+    @Published var forcedCut: Bool {
+        didSet { UserDefaults.standard.set(forcedCut, forKey: Self.forcedCutKey) }
+    }
+
     private static let themeKey = "app.theme"
     private static let difficultyKey = "app.aiDifficulty"
     private static let aiSpeedKey = "app.aiSpeed"
     private static let soundEnabledKey = "app.soundEnabled"
+    private static let forcedCutKey = "app.forcedCut"
 
     init() {
-        let storedTheme = UserDefaults.standard.string(forKey: Self.themeKey)
-        theme = AppTheme(rawValue: storedTheme ?? "system") ?? .system
-
-        let storedDifficulty = UserDefaults.standard.string(forKey: Self.difficultyKey)
-        aiDifficulty = AIDifficulty(rawValue: storedDifficulty ?? "normal") ?? .normal
-
-        let storedAISpeed = UserDefaults.standard.string(forKey: Self.aiSpeedKey)
-        aiSpeed = AISpeed(rawValue: storedAISpeed ?? "normal") ?? .normal
-
-        soundEnabled = (UserDefaults.standard.object(forKey: Self.soundEnabledKey) as? Bool) ?? true
+        let defaults = UserDefaults.standard
+        theme = AppTheme(rawValue: defaults.string(forKey: Self.themeKey) ?? "") ?? .system
+        aiDifficulty = AIDifficulty(rawValue: defaults.string(forKey: Self.difficultyKey) ?? "") ?? .normal
+        aiSpeed = AISpeed(rawValue: defaults.string(forKey: Self.aiSpeedKey) ?? "") ?? .normal
+        soundEnabled = defaults.object(forKey: Self.soundEnabledKey) as? Bool ?? true
+        forcedCut = defaults.bool(forKey: Self.forcedCutKey)
         SoundPlayer.isEnabled = soundEnabled
     }
 }

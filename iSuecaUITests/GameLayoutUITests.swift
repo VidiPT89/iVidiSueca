@@ -7,6 +7,8 @@ final class GameLayoutUITests: XCTestCase {
     }
 
     private func startGame(_ app: XCUIApplication) {
+        // Pin the language so accessibility values such as "Playable" are predictable.
+        app.launchArguments += ["-app.language.override", "en"]
         app.launch()
         let play = app.buttons["menu.play"]
         XCTAssertTrue(play.waitForExistence(timeout: 10))
@@ -41,13 +43,30 @@ final class GameLayoutUITests: XCTestCase {
 
         app.buttons["game.hint"].tap()
         XCTAssertEqual(cards.count, 10, "Hint must not play a card")
+        var checkedRejection = false
         for remaining in stride(from: 10, through: 1, by: -1) {
-            let playable = cards.matching(NSPredicate(format: "isEnabled == true")).firstMatch
+            let playable = cards.matching(NSPredicate(format: "isEnabled == true AND value == 'Playable'")).firstMatch
             XCTAssertTrue(playable.waitForExistence(timeout: 20))
             XCTAssertEqual(cards.count, remaining)
+            let unavailable = cards.matching(NSPredicate(format: "value == 'Unavailable'")).firstMatch
+            if !checkedRejection, unavailable.exists {
+                unavailable.tap()
+                XCTAssertEqual(cards.count, remaining, "An unavailable card must not be played")
+                checkedRejection = true
+            }
             playable.tap()
         }
-        XCTAssertTrue(app.buttons["game.playAgain"].waitForExistence(timeout: 20))
+        let next = app.buttons["game.playAgain"]
+        XCTAssertTrue(next.waitForExistence(timeout: 20))
+        let endScreen = XCTAttachment(screenshot: app.screenshot())
+        endScreen.name = "Hand-end"
+        endScreen.lifetime = .keepAlways
+        add(endScreen)
+
+        // The match continues (or restarts) with a fresh deal.
+        next.tap()
+        XCTAssertTrue(app.buttons["game.hint"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.staticTexts["game.matchScore"].exists)
     }
 
     func testPauseExitAndRestart() {

@@ -2,36 +2,26 @@ import Foundation
 
 enum DealerService {
     struct DealResult {
-        let players: [PlayerPosition: Player]
-        let trumpSuit: Suit
+        let hands: [PlayerPosition: [Card]]
         let trumpCard: Card
+        var trumpSuit: Suit { trumpCard.suit }
     }
 
     /// Deals 10 cards to each of the 4 seats and reveals the dealer's last card as trump.
     static func deal(dealer: PlayerPosition) -> DealResult {
-        let deck = DeckBuilder.shuffledDeck()
-        var hands: [PlayerPosition: [Card]] = [.south: [], .west: [], .north: [], .east: []]
-
+        var hands: [PlayerPosition: [Card]] = [:]
         var seat = dealer.next
-        var index = 0
-        for _ in 0..<40 {
-            hands[seat]?.append(deck[index])
-            index += 1
+        for card in DeckBuilder.shuffledDeck() {
+            hands[seat, default: []].append(card)
             seat = seat.next
         }
 
         let trumpCard = hands[dealer]!.last!
-        let trumpSuit = trumpCard.suit
-
-        var players: [PlayerPosition: Player] = [:]
-        for position in PlayerPosition.allCases {
-            let sorted = sortForDisplay(hands[position] ?? [], trump: trumpSuit)
-            players[position] = Player(position: position, hand: sorted, isBot: position != .south)
-        }
-
-        return DealResult(players: players, trumpSuit: trumpSuit, trumpCard: trumpCard)
+        let sorted = hands.mapValues { sortForDisplay($0, trump: trumpCard.suit) }
+        return DealResult(hands: sorted, trumpCard: trumpCard)
     }
 
+    /// Trumps first, then the other suits; strongest card first within each suit.
     static func sortForDisplay(_ cards: [Card], trump: Suit) -> [Card] {
         cards.sorted { lhs, rhs in
             if lhs.suit == rhs.suit {

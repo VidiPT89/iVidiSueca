@@ -1,6 +1,6 @@
 import Foundation
 
-enum PlayerPosition: Int, CaseIterable, Codable, Identifiable {
+enum PlayerPosition: Int, CaseIterable, Identifiable {
     case south = 0, west, north, east
     // South = human. South+North = Team A, West+East = Team B.
 
@@ -8,15 +8,6 @@ enum PlayerPosition: Int, CaseIterable, Codable, Identifiable {
 
     var next: PlayerPosition {
         PlayerPosition(rawValue: (rawValue + 1) % 4)!
-    }
-
-    var partner: PlayerPosition {
-        switch self {
-        case .south: return .north
-        case .north: return .south
-        case .west: return .east
-        case .east: return .west
-        }
     }
 
     var team: Team {
@@ -36,7 +27,7 @@ enum PlayerPosition: Int, CaseIterable, Codable, Identifiable {
     }
 }
 
-enum Team: String, Codable {
+enum Team {
     case teamA, teamB
 
     var nameKey: String {
@@ -44,21 +35,5 @@ enum Team: String, Codable {
         case .teamA: return "game.teamA"
         case .teamB: return "game.teamB"
         }
-    }
-
-    var opponent: Team { self == .teamA ? .teamB : .teamA }
-}
-
-struct Player: Identifiable, Codable {
-    let id: UUID
-    let position: PlayerPosition
-    var hand: [Card]
-    let isBot: Bool
-
-    init(position: PlayerPosition, hand: [Card] = [], isBot: Bool) {
-        self.id = UUID()
-        self.position = position
-        self.hand = hand
-        self.isBot = isBot
     }
 }

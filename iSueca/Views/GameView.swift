@@ -7,6 +7,7 @@ struct GameView: View {
     @State private var showRules = false
     @State private var showExitConfirmation = false
     @State private var hintID: UUID?
+    @State private var shakes: CGFloat = 0
 
     private var humanTurn: Bool {
         viewModel.phase == .playing && viewModel.currentPlayerTurn == .south
@@ -22,7 +23,9 @@ struct GameView: View {
                 HStack {
                     Text(String(format: L.t("game.round"), min(viewModel.completedTricks.count + (viewModel.phase == .trickEnd ? 0 : 1), 10)))
                     Spacer()
-                    Text(L.t("game.target"))
+                    Text(String(format: L.t("game.match"), viewModel.teamAGames, viewModel.teamBGames, ScoreCalculator.gamesToWinMatch))
+                        .monospacedDigit()
+                        .accessibilityIdentifier("game.matchScore")
                 }
                 .font(.caption.weight(.medium))
                 .foregroundStyle(Color.brandTextSecondary)
@@ -40,6 +43,8 @@ struct GameView: View {
                         .font(.caption)
                         .foregroundStyle(Color.brandTextSecondary)
                         .multilineTextAlignment(.center)
+                        .lineLimit(2)
+                        .minimumScaleFactor(0.8)
                         .frame(minHeight: 28)
                 }
                 .accessibilityElement(children: .combine)
@@ -65,10 +70,15 @@ struct GameView: View {
         }
         .animation(reduceMotion ? nil : .spring(response: 0.35, dampingFraction: 0.82), value: viewModel.currentTrick.cardsPlayed.count)
         .onChange(of: viewModel.currentTrick.cardsPlayed.count) { _ in hintID = nil }
+        .onChange(of: viewModel.rejectionCount) { _ in
+            guard !reduceMotion else { return }
+            withAnimation(.linear(duration: 0.35)) { shakes += 1 }
+        }
         .sheet(isPresented: $showHistory, onDismiss: { viewModel.setPaused(false) }) {
             TrickHistoryView(tricks: viewModel.completedTricks)
         }
-        .sheet(isPresented: $showRules, onDismiss: { viewModel.setPaused(false) }) { RulesView() }
+        // Rules open from the pause menu, so closing them returns there instead of resuming.
+        .sheet(isPresented: $showRules) { RulesView() }
         .confirmationDialog(L.t("game.leaveTitle"), isPresented: $showExitConfirmation, titleVisibility: .visible) {
             Button(L.t("game.leave"), role: .destructive) { viewModel.returnToMenu() }
                 .accessibilityIdentifier("game.confirmLeave")
@@ -123,7 +133,7 @@ struct GameView: View {
                 ForEach(viewModel.currentTrick.cardsPlayed) { played in
                     let winning = viewModel.phase == .trickEnd && viewModel.lastTrickWinner == played.position
                     CardView(card: played.card, width: cardWidth)
-                        .overlay(RoundedRectangle(cornerRadius: 8).stroke(winning ? Color.brandSecondary : .clear, lineWidth: 3))
+                        .overlay(RoundedRectangle(cornerRadius: cardWidth * 0.14).stroke(winning ? Color.brandSecondary : .clear, lineWidth: 3))
                         .rotationEffect(.degrees(played.position == .west ? -9 : played.position == .east ? 9 : 0))
                         .offset(cardOffset(played.position, width: cardWidth))
                         .transition(.opacity.combined(with: .scale(scale: reduceMotion ? 1 : 0.8)))
@@ -181,14 +191,21 @@ struct GameView: View {
     private var statusDetail: String {
         if viewModel.phase == .trickEnd { return L.t("game.nextTrick") }
         guard humanTurn else { return L.t("game.partnerInfo") }
+        if viewModel.rejectedCard != nil { return L.t("game.rejected") + " " + playGuidance }
         if hintID != nil { return L.t("game.hintDetail") }
+        return playGuidance
+    }
+
+    private var playGuidance: String {
         if let lead = viewModel.currentTrick.leadSuit {
-            if (viewModel.handsByPosition[.south] ?? []).contains(where: { $0.suit == lead }) {
+            let legal = viewModel.humanLegalMoves
+            if legal.contains(where: { $0.suit == lead }) {
                 return String(format: L.t("game.follow"), L.t(lead.nameKey))
             }
-            if viewModel.humanLegalMoves.allSatisfy({ $0.suit == viewModel.trumpSuit }) {
+            if legal.allSatisfy({ $0.suit == viewModel.trumpSuit }) {
                 return String(format: L.t("game.cut"), L.t(viewModel.trumpSuit.nameKey))
             }
+            return String(format: L.t("game.void"), L.t(lead.nameKey))
         }
         return L.t("game.choose")
     }
@@ -214,17 +231,22 @@ struct GameView: View {
             .foregroundStyle(Color.brandTextSecondary)
             LazyVGrid(columns: Array(repeating: GridItem(.fixed(cardWidth), spacing: 8), count: 5), spacing: 8) {
                 ForEach(cards) { card in
+                    let playable = legal.contains(card.id)
+                    // Unavailable cards stay tappable on the player's turn so a tap explains itself
+                    // with a shake, haptic and status message instead of silently doing nothing.
                     Button {
                         viewModel.playHumanCard(card)
                     } label: {
                         CardView(card: card, width: cardWidth)
                             .overlay(RoundedRectangle(cornerRadius: cardWidth * 0.14)
                                 .stroke(hintID == card.id ? Color.brandSecondary : .clear, lineWidth: 3))
-                            .opacity(humanTurn && !legal.contains(card.id) ? 0.65 : 1)
+                            .opacity(humanTurn && !playable ? 0.55 : 1)
+                            .modifier(Shake(amount: viewModel.rejectedCard?.id == card.id ? shakes : 0))
                     }
                     .buttonStyle(HandCardButtonStyle())
-                    .disabled(!humanTurn || !legal.contains(card.id))
-                    .accessibilityLabel("\(card.displayLabel), \(L.t(card.suit.nameKey)), \(card.pointValue) \(L.t("history.points"))")
+                    .disabled(!humanTurn)
+                    .accessibilityLabel("\(card.rank.label), \(L.t(card.suit.nameKey)), \(card.pointValue) \(L.t("history.points"))")
+                    .accessibilityValue(humanTurn ? L.t(playable ? "game.cardPlayable" : "game.cardUnavailable") : "")
                     .accessibilityIdentifier("hand.card.\(card.suit.rawValue).\(card.rank.rawValue)")
                 }
             }
@@ -274,5 +296,18 @@ private struct TableGrain: Shape {
 private struct HandCardButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label.scaleEffect(configuration.isPressed ? 0.97 : 1)
+    }
+}
+
+/// Horizontal wobble; each whole step of `amount` is one full shake.
+private struct Shake: GeometryEffect {
+    var amount: CGFloat
+    var animatableData: CGFloat {
+        get { amount }
+        set { amount = newValue }
+    }
+
+    func effectValue(size: CGSize) -> ProjectionTransform {
+        ProjectionTransform(CGAffineTransform(translationX: 6 * sin(amount * .pi * 6), y: 0))
     }
 }

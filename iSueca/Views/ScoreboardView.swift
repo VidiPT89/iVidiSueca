@@ -7,7 +7,7 @@ struct ScoreboardView: View {
 
     var body: some View {
         HStack(spacing: 14) {
-            score(titleKey: "game.teamA", points: teamAPoints, color: .brandPrimary)
+            score(.teamA, points: teamAPoints, color: .brandPrimary)
             if let trumpCard {
                 VStack(spacing: 4) {
                     Text(L.t("game.trump"))
@@ -17,16 +17,16 @@ struct ScoreboardView: View {
                 }
                 .accessibilityElement(children: .combine)
             }
-            score(titleKey: "game.teamB", points: teamBPoints, color: .brandTextSecondary)
+            score(.teamB, points: teamBPoints, color: .brandTextSecondary)
         }
         .padding(12)
         .background(RoundedRectangle(cornerRadius: 20).fill(Color.brandSurface))
         .frame(maxWidth: 620)
     }
 
-    private func score(titleKey: String, points: Int, color: Color) -> some View {
+    private func score(_ team: Team, points: Int, color: Color) -> some View {
         VStack(alignment: .leading, spacing: 5) {
-            Text(L.t(titleKey))
+            Text(L.t(team.nameKey))
                 .font(.caption2.weight(.semibold))
                 .foregroundStyle(Color.brandTextSecondary)
                 .lineLimit(1).minimumScaleFactor(0.7)
@@ -37,7 +37,7 @@ struct ScoreboardView: View {
             GeometryReader { geo in
                 Capsule().fill(color.opacity(0.12))
                 Capsule().fill(color)
-                    .frame(width: geo.size.width * min(CGFloat(points) / 61, 1))
+                    .frame(width: geo.size.width * min(CGFloat(points) / CGFloat(ScoreCalculator.winThreshold), 1))
             }
             .frame(height: 3)
             .accessibilityHidden(true)

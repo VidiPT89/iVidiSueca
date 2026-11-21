@@ -8,7 +8,8 @@ struct RulesView: View {
         "rules.section.values",
         "rules.section.dealing",
         "rules.section.play",
-        "rules.section.winning"
+        "rules.section.winning",
+        "rules.section.match"
     ]
 
     var body: some View {
