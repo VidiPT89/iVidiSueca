@@ -1,8 +1,8 @@
 import Foundation
 
 /// Tracks every card seen so far to reason about what opponents can still hold,
-/// plays "master" cards when they are guaranteed to win, and only cuts with trump
-/// when the trick is worth it or the trump card is otherwise safe to spend.
+/// leads established suits and chooses the cheapest trump that actually wins.
+/// A master of a suit can still be cut by an opponent void in that suit.
 struct HardBotStrategy: BotStrategy {
     func chooseCard(from legalMoves: [Card], hand: [Card], context: BotContext) -> Card {
         let seen = seenCards(context: context, hand: hand)
@@ -30,7 +30,7 @@ struct HardBotStrategy: BotStrategy {
                 return sameSuit.min { $0.pointValue < $1.pointValue } ?? sameSuit[0]
             }
             let currentWinningCard = trick.cardsPlayed.first { $0.position == currentWinner }!.card
-            let winningOptions = sameSuit.filter { $0.rank > currentWinningCard.rank }
+            let winningOptions = sameSuit.filter { $0.suit == currentWinningCard.suit && $0.rank > currentWinningCard.rank }
             if let cheapestWin = winningOptions.min(by: { $0.pointValue < $1.pointValue }) {
                 return cheapestWin
             }
@@ -39,19 +39,17 @@ struct HardBotStrategy: BotStrategy {
 
         let trumps = legalMoves.filter { $0.suit == context.trump }
         if !trumps.isEmpty {
-            if partnerWinning {
-                return chooseDiscard(from: legalMoves, seen: seen, context: context)
+            if partnerWinning && trick.cardsPlayed.count == 3 {
+                return legalMoves.max { $0.pointValue < $1.pointValue }!
             }
-            let higherTrumpsUnseen = unseenHigherTrumps(than: trumps.min { $0.rank < $1.rank }!, seen: seen, context: context)
-            let trickValue = trick.points
-            let worthCutting = trickValue >= 4 || isLastToPlay || higherTrumpsUnseen == 0
-            if worthCutting {
-                if isLastToPlay {
-                    let cheapestWinningTrump = trumps.min { $0.rank < $1.rank }!
-                    return cheapestWinningTrump
+            if !partnerWinning {
+                let winningTrumps = trumps.filter { card in
+                    var trial = trick
+                    trial.play(card, by: context.position)
+                    return TrickResolver.winner(of: trial, trump: context.trump) == context.position
                 }
-                let cheapTrumps = trumps.filter { $0.rank != .ace && $0.rank != .seven }
-                return cheapTrumps.min { $0.rank < $1.rank } ?? trumps.min { $0.rank < $1.rank }!
+                return winningTrumps.min { $0.rank < $1.rank }
+                    ?? legalMoves.min { $0.pointValue < $1.pointValue }!
             }
             return chooseDiscard(from: legalMoves, seen: seen, context: context)
         }
@@ -87,12 +85,6 @@ struct HardBotStrategy: BotStrategy {
             }
         }
         return true
-    }
-
-    private func unseenHigherTrumps(than card: Card, seen: Set<Card>, context: BotContext) -> Int {
-        Rank.allCases.filter { $0 > card.rank }
-            .filter { rank in !seen.contains(where: { $0.suit == context.trump && $0.rank == rank }) }
-            .count
     }
 
     private func seenCards(context: BotContext, hand: [Card]) -> Set<Card> {

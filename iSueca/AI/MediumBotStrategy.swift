@@ -24,7 +24,7 @@ struct MediumBotStrategy: BotStrategy {
                 return sameSuit.min { $0.pointValue < $1.pointValue } ?? sameSuit[0]
             }
             let currentWinningCard = trick.cardsPlayed.first { $0.position == currentWinner }!.card
-            let winningOptions = sameSuit.filter { $0.rank > currentWinningCard.rank }
+            let winningOptions = sameSuit.filter { $0.suit == currentWinningCard.suit && $0.rank > currentWinningCard.rank }
             if let cheapestWin = winningOptions.min(by: { $0.pointValue < $1.pointValue }) {
                 return cheapestWin
             }
@@ -33,15 +33,19 @@ struct MediumBotStrategy: BotStrategy {
 
         let trumps = legalMoves.filter { $0.suit == context.trump }
         if !trumps.isEmpty {
-            if partnerWinning {
-                return chooseDiscard(from: legalMoves)
+            if partnerWinning && trick.cardsPlayed.count == 3 {
+                return legalMoves.max { $0.pointValue < $1.pointValue }!
             }
-            let trickValue = trick.points
-            let cheapTrumps = trumps.filter { $0.rank != .ace && $0.rank != .seven }
-            if trickValue >= 5 || trumps.count == legalMoves.count {
-                return cheapTrumps.min { $0.rank < $1.rank } ?? trumps.min { $0.rank < $1.rank }!
+            if !partnerWinning {
+                let winningTrumps = trumps.filter { card in
+                    var trial = trick
+                    trial.play(card, by: context.position)
+                    return TrickResolver.winner(of: trial, trump: context.trump) == context.position
+                }
+                return winningTrumps.min { $0.rank < $1.rank }
+                    ?? legalMoves.min { $0.pointValue < $1.pointValue }!
             }
-            return trumps.min { $0.rank < $1.rank } ?? trumps[0]
+            return chooseDiscard(from: legalMoves)
         }
 
         return chooseDiscard(from: legalMoves)

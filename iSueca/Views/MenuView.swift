@@ -16,7 +16,8 @@ struct MenuView: View {
             )
             .ignoresSafeArea()
 
-            VStack {
+            ScrollView {
+              VStack(spacing: 20) {
                 HStack {
                     Spacer()
                     languageToggle
@@ -24,24 +25,29 @@ struct MenuView: View {
                 .padding(.horizontal)
                 .padding(.top, 6)
 
-                Spacer()
+                ZStack {
+                    ForEach(Array(Suit.allCases.enumerated()), id: \.offset) { index, suit in
+                        CardView(card: Card(suit: suit, rank: .ace), width: 82)
+                            .rotationEffect(.degrees(Double(index) * 15 - 22.5))
+                            .offset(x: CGFloat(index) * 38 - 57, y: abs(CGFloat(index) - 1.5) * 12)
+                    }
+                }
+                .frame(height: 150)
+                .accessibilityHidden(true)
+                .padding(.top, 16)
 
                 titleBlock
-
-                Spacer()
 
                 Button {
                     viewModel.startNewGame()
                 } label: {
-                    Text(L.t("menu.startGame"))
+                    Label(L.t("menu.startGame"), systemImage: "play.fill")
                         .font(.headline.weight(.bold))
                         .foregroundColor(.white)
-                        .frame(maxWidth: 260)
+                        .frame(maxWidth: 320)
                         .padding(.vertical, 16)
                         .background(
-                            Capsule().fill(
-                                LinearGradient(colors: [.brandPrimary, .brandSecondary], startPoint: .leading, endPoint: .trailing)
-                            )
+                            RoundedRectangle(cornerRadius: 16).fill(Color.brandPrimary)
                         )
                         .shadow(color: Color.brandPrimary.opacity(0.4), radius: 14, y: 6)
                 }
@@ -52,11 +58,16 @@ struct MenuView: View {
                     menuButton(L.t("menu.settings"), icon: "gearshape.fill") { showSettings = true }
                     menuButton(L.t("menu.about"), icon: "info.circle.fill") { showAbout = true }
                 }
-                .padding(.top, 24)
+                .padding(.top, 4)
 
-                Spacer()
+                Text(L.t("menu.tagline"))
+                    .font(.caption).foregroundStyle(Color.brandTextSecondary)
+                    .padding(.top, 8)
+              }
+              .frame(maxWidth: 480)
+              .padding(24)
+              .frame(maxWidth: .infinity)
             }
-            .padding()
         }
         .sheet(isPresented: $showSettings) { SettingsView() }
         .sheet(isPresented: $showAbout) { AboutView() }
@@ -79,7 +90,7 @@ struct MenuView: View {
     private var titleBlock: some View {
         VStack(spacing: 6) {
             Text(L.t("menu.title"))
-                .font(.system(size: 54, weight: .black, design: .rounded))
+                .font(.system(size: 54, weight: .bold, design: .serif))
                 .tracking(1)
                 .foregroundStyle(
                     LinearGradient(colors: [.brandPrimary, .brandSecondary], startPoint: .leading, endPoint: .trailing)
@@ -134,6 +145,6 @@ struct MenuView: View {
                     .shadow(color: .black.opacity(0.06), radius: 6, y: 3)
             )
         }
-        .frame(maxWidth: 280)
+        .frame(maxWidth: 320)
     }
 }

@@ -3,6 +3,7 @@ import SwiftUI
 struct RootView: View {
     @StateObject private var viewModel = GameViewModel()
     @EnvironmentObject private var settings: SettingsViewModel
+    @Environment(\.scenePhase) private var scenePhase
     @State private var showSplash = true
 
     var body: some View {
@@ -17,6 +18,8 @@ struct RootView: View {
                     GameEndView(viewModel: viewModel)
                 }
             }
+            .allowsHitTesting(!showSplash)
+            .accessibilityHidden(showSplash)
             .animation(.easeInOut(duration: 0.35), value: phaseIdentifier)
             .transition(.opacity)
 
@@ -24,6 +27,11 @@ struct RootView: View {
                 SplashView { withAnimation(.easeInOut(duration: 0.4)) { showSplash = false } }
                     .transition(.opacity)
                     .zIndex(1)
+            }
+        }
+        .onChange(of: scenePhase) { phase in
+            if phase != .active && viewModel.phase != .menu && viewModel.phase != .handEnd {
+                viewModel.setPaused(true)
             }
         }
         .preferredColorScheme(settings.theme.colorScheme)

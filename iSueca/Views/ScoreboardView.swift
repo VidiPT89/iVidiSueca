@@ -6,40 +6,43 @@ struct ScoreboardView: View {
     let trumpCard: Card?
 
     var body: some View {
-        HStack(spacing: 16) {
-            scorePill(titleKey: "game.teamA", points: teamAPoints, color: .brandPrimary)
-
+        HStack(spacing: 14) {
+            score(titleKey: "game.teamA", points: teamAPoints, color: .brandPrimary)
             if let trumpCard {
-                VStack(spacing: 2) {
+                VStack(spacing: 4) {
                     Text(L.t("game.trump"))
                         .font(.caption2.weight(.semibold))
-                        .foregroundColor(.brandTextSecondary)
-                    CardView(card: trumpCard, width: 34)
+                        .foregroundStyle(Color.brandTextSecondary)
+                    CardView(card: trumpCard, width: 32)
                 }
+                .accessibilityElement(children: .combine)
             }
-
-            scorePill(titleKey: "game.teamB", points: teamBPoints, color: .brandSecondary)
+            score(titleKey: "game.teamB", points: teamBPoints, color: .brandTextSecondary)
         }
-        .padding(.horizontal, 14)
-        .padding(.vertical, 8)
-        .background(
-            Capsule().fill(Color.brandSurface.opacity(0.85))
-                .shadow(color: .black.opacity(0.15), radius: 6, y: 3)
-        )
-        .animation(.spring(response: 0.4, dampingFraction: 0.8), value: teamAPoints)
-        .animation(.spring(response: 0.4, dampingFraction: 0.8), value: teamBPoints)
+        .padding(12)
+        .background(RoundedRectangle(cornerRadius: 20).fill(Color.brandSurface))
+        .frame(maxWidth: 620)
     }
 
-    private func scorePill(titleKey: String, points: Int, color: Color) -> some View {
-        VStack(spacing: 2) {
+    private func score(titleKey: String, points: Int, color: Color) -> some View {
+        VStack(alignment: .leading, spacing: 5) {
             Text(L.t(titleKey))
                 .font(.caption2.weight(.semibold))
-                .foregroundColor(.brandTextSecondary)
+                .foregroundStyle(Color.brandTextSecondary)
+                .lineLimit(1).minimumScaleFactor(0.7)
             Text("\(points)")
-                .font(.title3.weight(.heavy))
-                .foregroundColor(color)
-                .contentTransition(.numericText())
+                .font(.system(size: 30, weight: .semibold, design: .rounded))
+                .monospacedDigit()
+                .foregroundStyle(Color.brandTextPrimary)
+            GeometryReader { geo in
+                Capsule().fill(color.opacity(0.12))
+                Capsule().fill(color)
+                    .frame(width: geo.size.width * min(CGFloat(points) / 61, 1))
+            }
+            .frame(height: 3)
+            .accessibilityHidden(true)
         }
-        .frame(minWidth: 48)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .accessibilityElement(children: .combine)
     }
 }

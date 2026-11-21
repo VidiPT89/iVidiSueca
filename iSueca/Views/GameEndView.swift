@@ -52,10 +52,12 @@ struct GameEndView: View {
                             .shadow(color: Color.brandPrimary.opacity(0.4), radius: 14, y: 6)
                     }
 
+                    .accessibilityIdentifier("game.playAgain")
+
                     Button {
                         viewModel.returnToMenu()
                     } label: {
-                        Text(L.t("menu.title"))
+                        Text(L.t("game.leave"))
                             .font(.subheadline.weight(.semibold))
                             .foregroundColor(.brandTextSecondary)
                     }
@@ -74,6 +76,7 @@ struct GameEndView: View {
     }
 
     private var resultTitle: String {
+        if viewModel.handResult?.winner == nil { return L.t("game.draw") }
         if viewModel.handResult?.winner == .teamA {
             return L.t("game.youWin")
         }

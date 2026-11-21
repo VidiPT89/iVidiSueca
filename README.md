@@ -11,6 +11,9 @@
 - ✅ Card-counting bot on Hard difficulty — tracks played cards to spot master cards and safe cuts
 - ✅ Smooth, native SwiftUI animations — dealing, card play, trick collection and score count-up
 - ✅ Haptic feedback on card play and illegal-move attempts
+- ✅ Felt table, readable two-row hand, illustrated court cards and live score progress
+- ✅ Contextual follow-suit guidance, legal-card controls and optional hints
+- ✅ Pause/resume, automatic pause when leaving the app, and safe return to menu
 - ✅ Live scoreboard with visible trump card and turn indicator
 - ✅ Runtime language switch — Português (PT-PT) and English, independent of system locale
 - ✅ Dark mode, Light mode, and System mode
@@ -49,6 +52,17 @@ you; win tricks together to pass 60 of the 120 points in play. Adjust bot diffic
 language and appearance, and review the rules at any time from Settings and the main menu.
 
 ## 🧪 Testing
+
+Run the engine regression suite (300 complete hands and targeted bot decisions):
+
+```bash
+sh scripts/test-engine.sh
+```
+
+The `iSuecaUITests` target checks all ten cards and player seats remain on screen,
+plays a complete hand, and exercises pause, resume, exit confirmation and restart.
+Run it with Product → Test in Xcode on an iPhone or iPad simulator.
+
 
 Build and run the `iSueca` scheme in Xcode (`⌘R`), or verify the project compiles via:
 

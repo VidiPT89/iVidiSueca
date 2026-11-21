@@ -2,281 +2,277 @@ import SwiftUI
 
 struct GameView: View {
     @ObservedObject var viewModel: GameViewModel
-    @State private var shakeCardID: UUID?
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var showHistory = false
+    @State private var showRules = false
+    @State private var showExitConfirmation = false
+    @State private var hintID: UUID?
+
+    private var humanTurn: Bool {
+        viewModel.phase == .playing && viewModel.currentPlayerTurn == .south
+    }
 
     var body: some View {
         GeometryReader { proxy in
-            ZStack {
-                LinearGradient(
-                    colors: [Color.brandBackground, Color.brandSurface.opacity(0.7)],
-                    startPoint: .top, endPoint: .bottom
-                )
-                .ignoresSafeArea()
-
-                VStack(spacing: 0) {
-                    HStack {
-                        Spacer()
-                        ScoreboardView(teamAPoints: viewModel.teamAPoints, teamBPoints: viewModel.teamBPoints, trumpCard: viewModel.trumpCard)
-                        Spacer()
-                        historyButton
-                    }
-                    .padding(.top, 8)
-                    .padding(.trailing, 12)
-
-                    opponentRow(position: .north)
-                        .padding(.top, 10)
-
-                    Spacer(minLength: 0)
-
-                    HStack {
-                        opponentColumn(position: .west)
-                        Spacer()
-                        trickArea(size: proxy.size)
-                        Spacer()
-                        opponentColumn(position: .east)
-                    }
-                    .padding(.horizontal, 6)
-
-                    Spacer(minLength: 0)
-
-                    humanHand(availableWidth: proxy.size.width)
-                        .padding(.bottom, 10)
+            let compact = proxy.size.height < 650
+            VStack(spacing: compact ? 8 : 16) {
+                toolbar
+                ScoreboardView(teamAPoints: viewModel.teamAPoints, teamBPoints: viewModel.teamBPoints,
+                               trumpCard: viewModel.trumpCard)
+                HStack {
+                    Text(String(format: L.t("game.round"), min(viewModel.completedTricks.count + (viewModel.phase == .trickEnd ? 0 : 1), 10)))
+                    Spacer()
+                    Text(L.t("game.target"))
                 }
-                // Belt-and-braces: `humanHand` now sizes its own cards to always fit
-                // `proxy.size.width` (see its doc comment), but pinning the VStack to the measured
-                // screen size guards against any future row that might grow wider than the screen —
-                // without this, one overflowing row would inflate the width PROPOSED to every
-                // sibling row (e.g. the West/East seats below), pushing the last item past a
-                // Spacer() in some other row beyond the right edge, invisible with no visual clip.
-                .frame(width: proxy.size.width, height: proxy.size.height)
-                .clipped()
+                .font(.caption.weight(.medium))
+                .foregroundStyle(Color.brandTextSecondary)
+                .padding(.horizontal, 6)
 
+                table(compact: compact)
+                    .frame(maxWidth: 760)
+                    .frame(maxHeight: .infinity)
+
+                VStack(spacing: 6) {
+                    Text(statusTitle)
+                        .font(.headline)
+                        .foregroundStyle(Color.brandTextPrimary)
+                    Text(statusDetail)
+                        .font(.caption)
+                        .foregroundStyle(Color.brandTextSecondary)
+                        .multilineTextAlignment(.center)
+                        .frame(minHeight: 28)
+                }
+                .accessibilityElement(children: .combine)
+                .accessibilityIdentifier("game.status")
+
+                humanHand(width: min(proxy.size.width - 24, 620), compact: compact)
+            }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
+            .frame(width: proxy.size.width, height: proxy.size.height)
+            .background(Color.brandBackground.ignoresSafeArea())
+            .overlay {
                 if let stage = viewModel.dealingStage {
-                    DealingOverlayView(stage: stage, trumpCard: viewModel.trumpCard, leaderNameKey: viewModel.currentPlayerTurn.nameKey)
-                        .transition(.opacity)
-                        .zIndex(2)
+                    DealingOverlayView(stage: stage, trumpCard: viewModel.trumpCard,
+                                       leaderNameKey: viewModel.currentPlayerTurn.nameKey)
+                }
+            }
+            .overlay {
+                if viewModel.isPaused && !showHistory && !showRules {
+                    pauseOverlay
                 }
             }
         }
-        .animation(.easeInOut(duration: 0.3), value: viewModel.currentTrick.cardsPlayed.count)
-        .animation(.easeInOut(duration: 0.25), value: viewModel.dealingStage)
-        .sheet(isPresented: $showHistory) {
+        .animation(reduceMotion ? nil : .spring(response: 0.35, dampingFraction: 0.82), value: viewModel.currentTrick.cardsPlayed.count)
+        .onChange(of: viewModel.currentTrick.cardsPlayed.count) { _ in hintID = nil }
+        .sheet(isPresented: $showHistory, onDismiss: { viewModel.setPaused(false) }) {
             TrickHistoryView(tricks: viewModel.completedTricks)
         }
+        .sheet(isPresented: $showRules, onDismiss: { viewModel.setPaused(false) }) { RulesView() }
+        .confirmationDialog(L.t("game.leaveTitle"), isPresented: $showExitConfirmation, titleVisibility: .visible) {
+            Button(L.t("game.leave"), role: .destructive) { viewModel.returnToMenu() }
+                .accessibilityIdentifier("game.confirmLeave")
+            Button(L.t("game.cancel"), role: .cancel) { }
+        } message: { Text(L.t("game.leaveMessage")) }
     }
 
-    private var historyButton: some View {
-        Button {
-            showHistory = true
-        } label: {
-            Image(systemName: "clock.arrow.circlepath")
-                .font(.subheadline.weight(.semibold))
-                .foregroundColor(.brandTextSecondary)
-                .padding(8)
-                .background(Circle().fill(Color.brandSurface.opacity(0.85)))
-        }
-        .accessibilityLabel(L.t("history.title"))
-    }
-
-    private func opponentRow(position: PlayerPosition) -> some View {
-        VStack(spacing: 4) {
-            seatLabel(position)
-            HStack(spacing: -22) {
-                ForEach(0..<(viewModel.handsByPosition[position]?.count ?? 0), id: \.self) { _ in
-                    CardView(card: Card(suit: .clubs, rank: .two), faceUp: false, width: 34)
-                }
+    private var toolbar: some View {
+        HStack {
+            Button { viewModel.setPaused(true) } label: {
+                Image(systemName: "pause.fill").frame(width: 44, height: 44)
             }
-        }
-    }
-
-    private func opponentColumn(position: PlayerPosition) -> some View {
-        let cardWidth: CGFloat = 34
-        let cardHeight = cardWidth * 1.45
-        return VStack(spacing: 4) {
-            seatLabel(position)
-            VStack(spacing: -cardWidth * 0.55) {
-                ForEach(0..<(viewModel.handsByPosition[position]?.count ?? 0), id: \.self) { _ in
-                    CardView(card: Card(suit: .clubs, rank: .two), faceUp: false, width: cardWidth)
-                        .rotationEffect(.degrees(90))
-                        // `.rotationEffect` doesn't swap the layout size it reports to the parent,
-                        // so without this the VStack keeps reserving the pre-rotation (portrait)
-                        // box, which visually mismatches the post-rotation (landscape) pixels.
-                        .frame(width: cardHeight, height: cardWidth)
-                }
+            .accessibilityLabel(L.t("game.pause"))
+            .accessibilityIdentifier("game.pause")
+            Spacer()
+            Text("SUECA").font(.system(.subheadline, design: .serif).weight(.bold)).tracking(4)
+            Spacer()
+            Button {
+                viewModel.setPaused(true)
+                showHistory = true
+            } label: {
+                Image(systemName: "clock.arrow.circlepath").frame(width: 44, height: 44)
             }
+            .accessibilityLabel(L.t("history.title"))
+            .accessibilityIdentifier("game.history")
         }
-        .frame(width: cardHeight)
+        .foregroundStyle(Color.brandTextPrimary)
+        .frame(height: 36)
     }
 
-    private func seatLabel(_ position: PlayerPosition) -> some View {
-        let isActive = viewModel.currentPlayerTurn == position
-        let isThinking = isActive && position != .south && viewModel.phase == .playing
-
-        return HStack(spacing: 5) {
-            if isThinking {
-                ThinkingDot()
-            }
-            Text(L.t(position.nameKey))
-                .font(.caption.weight(.semibold))
-                .lineLimit(1)
-                .minimumScaleFactor(0.7)
-        }
-        .foregroundColor(isActive ? .brandPrimary : .brandTextSecondary)
-        .padding(.horizontal, 10)
-        .padding(.vertical, 4)
-        .background(
-            Capsule().fill(isActive ? Color.brandPrimary.opacity(0.18) : Color.clear)
-        )
-    }
-
-    private func trickArea(size: CGSize) -> some View {
-        let boxSize = min(size.width * 0.5, 210)
-        return ZStack {
-            RoundedRectangle(cornerRadius: 18)
-                .fill(Color.brandSurface.opacity(0.6))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 18)
-                        .strokeBorder(Color.brandPrimary.opacity(0.22), style: StrokeStyle(lineWidth: 1.5, dash: [6, 5]))
-                )
-                .frame(width: boxSize, height: boxSize)
-
-            if let leadSuit = viewModel.currentTrick.leadSuit {
-                VStack {
-                    HStack {
-                        Image(systemName: leadSuitSystemImage(leadSuit))
-                            .font(.caption2)
-                            .foregroundColor(leadSuit.isRed ? .red.opacity(0.55) : .brandTextSecondary)
-                            .padding(6)
-                            .background(Circle().fill(Color.brandSurface.opacity(0.9)))
-                        Spacer()
+    private func table(compact: Bool) -> some View {
+        GeometryReader { geo in
+            let cardWidth = min(compact ? 48.0 : (geo.size.width > 600 ? 90.0 : 64.0), geo.size.width * 0.16)
+            ZStack {
+                RoundedRectangle(cornerRadius: 36)
+                    .fill(RadialGradient(colors: [Color(red: 0.12, green: 0.32, blue: 0.28), Color(red: 0.035, green: 0.15, blue: 0.13)], center: .center, startRadius: 10, endRadius: geo.size.width * 0.8))
+                TableGrain().stroke(.white.opacity(0.035), lineWidth: 0.5)
+                    .clipShape(RoundedRectangle(cornerRadius: 36))
+                RoundedRectangle(cornerRadius: 30)
+                    .strokeBorder(Color(red: 0.78, green: 0.64, blue: 0.39).opacity(0.4), lineWidth: 1)
+                    .padding(6)
+                if viewModel.currentTrick.cardsPlayed.isEmpty {
+                    VStack(spacing: 5) {
+                        Image(systemName: "suit.spade").font(.system(size: 30, weight: .ultraLight))
+                        Text("iSueca").font(.system(.title3, design: .serif)).tracking(2)
                     }
-                    Spacer()
+                    .foregroundStyle(.white.opacity(0.18))
                 }
-                .frame(width: boxSize, height: boxSize)
-                .padding(6)
-                .transition(.opacity)
+                seat(.north).frame(maxHeight: .infinity, alignment: .top).padding(.top, 12)
+                seat(.west).frame(maxWidth: .infinity, alignment: .leading).padding(.leading, 12)
+                seat(.east).frame(maxWidth: .infinity, alignment: .trailing).padding(.trailing, 12)
+                ForEach(viewModel.currentTrick.cardsPlayed) { played in
+                    let winning = viewModel.phase == .trickEnd && viewModel.lastTrickWinner == played.position
+                    CardView(card: played.card, width: cardWidth)
+                        .overlay(RoundedRectangle(cornerRadius: 8).stroke(winning ? Color.brandSecondary : .clear, lineWidth: 3))
+                        .rotationEffect(.degrees(played.position == .west ? -9 : played.position == .east ? 9 : 0))
+                        .offset(cardOffset(played.position, width: cardWidth))
+                        .transition(.opacity.combined(with: .scale(scale: reduceMotion ? 1 : 0.8)))
+                }
+                HStack(spacing: 4) {
+                    Image(systemName: "rectangle.stack")
+                    Text("\(viewModel.currentTrick.points) \(L.t("history.points"))")
+                        .monospacedDigit()
+                }
+                .font(.caption2.weight(.medium))
+                .foregroundStyle(.white.opacity(0.7))
+                .frame(maxHeight: .infinity, alignment: .bottom)
+                .padding(.bottom, 12)
             }
+        }
+        .frame(minHeight: compact ? 195 : 240)
+    }
 
-            ForEach(viewModel.currentTrick.cardsPlayed) { played in
-                let isWinner = viewModel.phase == .trickEnd && viewModel.lastTrickWinner == played.position
-                CardView(card: played.card, width: 50)
-                    .shadow(color: isWinner ? Color.brandSecondary.opacity(0.9) : .clear, radius: isWinner ? 10 : 0)
-                    .scaleEffect(isWinner ? 1.12 : 1.0)
-                    .offset(offset(for: played.position))
-                    .transition(.asymmetric(
-                        insertion: .scale(scale: 0.4).combined(with: .opacity),
-                        removal: .move(edge: edge(for: played.position)).combined(with: .opacity)
-                    ))
-                    .animation(.spring(response: 0.35, dampingFraction: 0.6), value: viewModel.phase)
-                    .id(played.card.id)
+    private func seat(_ position: PlayerPosition) -> some View {
+        let active = viewModel.currentPlayerTurn == position && viewModel.phase == .playing
+        let layout = position == .north ? AnyLayout(HStackLayout(spacing: 6)) : AnyLayout(VStackLayout(spacing: 4))
+        return layout {
+            Image(systemName: position == .north ? "person.crop.circle.fill" : "person.crop.circle")
+                .font(.system(size: 22))
+            Text(L.t(position.nameKey)).font(.caption2.weight(.semibold))
+                .lineLimit(1).minimumScaleFactor(0.8)
+            Text("\(viewModel.handsByPosition[position]?.count ?? 0)")
+                .font(.caption2.monospacedDigit())
+                .opacity(0.7)
+        }
+        .foregroundStyle(active ? Color.brandSecondary : .white.opacity(0.8))
+        .padding(6)
+        .background(RoundedRectangle(cornerRadius: 12).fill(active ? .white.opacity(0.1) : .clear))
+        .overlay(RoundedRectangle(cornerRadius: 12).stroke(active ? Color.brandSecondary.opacity(0.65) : .clear))
+        .accessibilityElement(children: .combine)
+        .accessibilityIdentifier("seat.\(position.rawValue)")
+    }
+
+    private func cardOffset(_ position: PlayerPosition, width: CGFloat) -> CGSize {
+        switch position {
+        case .north: return CGSize(width: 0, height: -width * 0.55)
+        case .south: return CGSize(width: 0, height: width * 0.55)
+        case .west: return CGSize(width: -width * 0.8, height: 0)
+        case .east: return CGSize(width: width * 0.8, height: 0)
+        }
+    }
+
+    private var statusTitle: String {
+        if viewModel.phase == .trickEnd, let winner = viewModel.lastTrickWinner {
+            return String(format: L.t("game.trickWinner"), L.t(winner.nameKey), viewModel.currentTrick.points)
+        }
+        return humanTurn ? L.t("game.yourTurn") : String(format: L.t("game.thinking"), L.t(viewModel.currentPlayerTurn.nameKey))
+    }
+
+    private var statusDetail: String {
+        if viewModel.phase == .trickEnd { return L.t("game.nextTrick") }
+        guard humanTurn else { return L.t("game.partnerInfo") }
+        if hintID != nil { return L.t("game.hintDetail") }
+        if let lead = viewModel.currentTrick.leadSuit {
+            if (viewModel.handsByPosition[.south] ?? []).contains(where: { $0.suit == lead }) {
+                return String(format: L.t("game.follow"), L.t(lead.nameKey))
+            }
+            if viewModel.humanLegalMoves.allSatisfy({ $0.suit == viewModel.trumpSuit }) {
+                return String(format: L.t("game.cut"), L.t(viewModel.trumpSuit.nameKey))
             }
         }
+        return L.t("game.choose")
     }
 
-    private func leadSuitSystemImage(_ suit: Suit) -> String {
-        switch suit {
-        case .clubs: return "suit.club.fill"
-        case .hearts: return "suit.heart.fill"
-        case .spades: return "suit.spade.fill"
-        case .diamonds: return "suit.diamond.fill"
-        }
-    }
-
-    private func offset(for position: PlayerPosition) -> CGSize {
-        switch position {
-        case .south: return CGSize(width: 0, height: 34)
-        case .north: return CGSize(width: 0, height: -34)
-        case .west: return CGSize(width: -34, height: 0)
-        case .east: return CGSize(width: 34, height: 0)
-        }
-    }
-
-    private func edge(for position: PlayerPosition) -> Edge {
-        switch position {
-        case .south: return .bottom
-        case .north: return .top
-        case .west: return .leading
-        case .east: return .trailing
-        }
-    }
-
-    /// The hand fans out with overlapping cards; without a width cap a full 10-card hand would be
-    /// wider than the screen, cutting off the outermost cards. Shrinking `cardWidth` (bounded to
-    /// stay legible) as the hand grows keeps every card fully on screen and tappable.
-    private func humanHand(availableWidth: CGFloat) -> some View {
+    private func humanHand(width: CGFloat, compact: Bool) -> some View {
         let cards = viewModel.handsByPosition[.south] ?? []
-        let legal = Set(viewModel.humanLegalMoves.map { $0.id })
-        let isHumanTurn = viewModel.currentPlayerTurn == .south && (viewModel.phase == .playing)
-
-        let overlapRatio: CGFloat = 0.3
-        let maxCardWidth: CGFloat = 62
-        let minCardWidth: CGFloat = 42
-        let usableWidth = max(availableWidth - 16, minCardWidth)
-        let count = max(cards.count, 1)
-        let widthDenominator = 1 + CGFloat(count - 1) * (1 - overlapRatio)
-        let cardWidth = min(maxCardWidth, max(minCardWidth, usableWidth / widthDenominator))
-
-        return HStack(spacing: -cardWidth * overlapRatio) {
-            ForEach(cards) { card in
-                CardView(card: card, width: cardWidth)
-                    .offset(y: shakeCardID == card.id ? 0 : (isHumanTurn && legal.contains(card.id) ? -10 : 0))
-                    .opacity(isHumanTurn && !legal.contains(card.id) ? 0.55 : 1.0)
-                    .modifier(ShakeEffect(shakes: shakeCardID == card.id ? 2 : 0))
-                    .onTapGesture {
-                        guard isHumanTurn else { return }
-                        if legal.contains(card.id) {
-                            withAnimation(.spring(response: 0.35, dampingFraction: 0.7)) {
-                                viewModel.playHumanCard(card)
-                            }
-                        } else {
-                            triggerShake(card.id)
-                        }
-                    }
-                    .zIndex(shakeCardID == card.id ? 1 : 0)
-                    .animation(.spring(response: 0.3, dampingFraction: 0.75), value: isHumanTurn)
+        let legal = Set(viewModel.humanLegalMoves.map(\.id))
+        let cardWidth = min(compact ? 51 : (width > 500 ? 96 : 66), (width - 32) / 5)
+        return VStack(spacing: 8) {
+            HStack {
+                Text(L.t("game.yourHand")).font(.caption.weight(.semibold))
+                Spacer()
+                Button {
+                    hintID = viewModel.suggestedCard?.id
+                } label: {
+                    Label(L.t("game.hint"), systemImage: "lightbulb")
+                        .font(.caption.weight(.semibold))
+                        .frame(minHeight: 32)
+                }
+                .disabled(!humanTurn)
+                .accessibilityIdentifier("game.hint")
             }
-        }
-        .frame(maxWidth: .infinity)
-        .onChange(of: viewModel.invalidMoveAttempt) { newValue in
-            if let id = newValue?.id { triggerShake(id) }
-        }
-    }
-
-    private func triggerShake(_ id: UUID) {
-        withAnimation(.default) { shakeCardID = id }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-            if shakeCardID == id { shakeCardID = nil }
-        }
-    }
-}
-
-private struct ThinkingDot: View {
-    @State private var isPulsing = false
-
-    var body: some View {
-        Circle()
-            .fill(Color.brandPrimary)
-            .frame(width: 6, height: 6)
-            .scaleEffect(isPulsing ? 1.3 : 0.7)
-            .opacity(isPulsing ? 1.0 : 0.5)
-            .onAppear {
-                withAnimation(.easeInOut(duration: 0.7).repeatForever(autoreverses: true)) {
-                    isPulsing = true
+            .foregroundStyle(Color.brandTextSecondary)
+            LazyVGrid(columns: Array(repeating: GridItem(.fixed(cardWidth), spacing: 8), count: 5), spacing: 8) {
+                ForEach(cards) { card in
+                    Button {
+                        viewModel.playHumanCard(card)
+                    } label: {
+                        CardView(card: card, width: cardWidth)
+                            .overlay(RoundedRectangle(cornerRadius: cardWidth * 0.14)
+                                .stroke(hintID == card.id ? Color.brandSecondary : .clear, lineWidth: 3))
+                            .opacity(humanTurn && !legal.contains(card.id) ? 0.65 : 1)
+                    }
+                    .buttonStyle(HandCardButtonStyle())
+                    .disabled(!humanTurn || !legal.contains(card.id))
+                    .accessibilityLabel("\(card.displayLabel), \(L.t(card.suit.nameKey)), \(card.pointValue) \(L.t("history.points"))")
+                    .accessibilityIdentifier("hand.card.\(card.suit.rawValue).\(card.rank.rawValue)")
                 }
             }
+            .frame(height: cardWidth * 1.38 * 2 + 8, alignment: .top)
+        }
+        .frame(maxWidth: 620)
+    }
+
+    private var pauseOverlay: some View {
+        ZStack {
+            Color.black.opacity(0.65).ignoresSafeArea()
+            VStack(spacing: 20) {
+                Image(systemName: "pause.circle").font(.system(size: 44, weight: .light)).foregroundStyle(Color.brandPrimary)
+                Text(L.t("game.paused")).font(.title2.bold())
+                Button(L.t("game.resume")) { viewModel.setPaused(false) }
+                    .buttonStyle(.borderedProminent).tint(.brandPrimary)
+                    .accessibilityIdentifier("game.resume")
+                Button(L.t("menu.rules")) { showRules = true }
+                Button(L.t("game.leave"), role: .destructive) { showExitConfirmation = true }
+                    .accessibilityIdentifier("game.leave")
+            }
+            .padding(32)
+            .frame(maxWidth: 300)
+            .background(RoundedRectangle(cornerRadius: 24).fill(Color.brandSurface))
+            .foregroundStyle(Color.brandTextPrimary)
+        }
+        .accessibilityAddTraits(.isModal)
     }
 }
 
-private struct ShakeEffect: GeometryEffect {
-    var shakes: CGFloat
-    var animatableData: CGFloat {
-        get { shakes }
-        set { shakes = newValue }
+private struct TableGrain: Shape {
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        for x in stride(from: 0.0, through: rect.width, by: 6) {
+            path.move(to: CGPoint(x: x, y: 0))
+            path.addLine(to: CGPoint(x: x, y: rect.height))
+        }
+        for y in stride(from: 0.0, through: rect.height, by: 6) {
+            path.move(to: CGPoint(x: 0, y: y))
+            path.addLine(to: CGPoint(x: rect.width, y: y))
+        }
+        return path
     }
+}
 
-    func effectValue(size: CGSize) -> ProjectionTransform {
-        let translation = 6 * sin(shakes * .pi * 4)
-        return ProjectionTransform(CGAffineTransform(translationX: translation, y: 0))
+/// Keep unavailable cards readable; the system plain style also dims disabled labels.
+private struct HandCardButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label.scaleEffect(configuration.isPressed ? 0.97 : 1)
     }
 }

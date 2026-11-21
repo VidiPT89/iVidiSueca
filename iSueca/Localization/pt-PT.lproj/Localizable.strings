@@ -88,3 +88,28 @@
 "history.empty" = "Ainda não foi jogada nenhuma vaza.";
 "history.trickNumber" = "Vaza %d";
 "history.points" = "pts";
+
+/* Table guidance and controls */
+"game.round" = "Vaza %d de 10";
+"game.target" = "Objetivo: 61 pontos";
+"game.pause" = "Pausar jogo";
+"game.paused" = "Jogo em pausa";
+"game.resume" = "Continuar a jogar";
+"game.leaveTitle" = "Sair desta mão?";
+"game.leave" = "Voltar ao menu";
+"game.leaveMessage" = "O progresso desta mão será perdido.";
+"game.cancel" = "Cancelar";
+"game.trickWinner" = "%@ ganhou · %d pts";
+"game.yourTurn" = "É a tua vez";
+"game.thinking" = "%@ está a jogar";
+"game.nextTrick" = "Quem ganha a vaza começa a próxima.";
+"game.partnerInfo" = "O teu parceiro está à tua frente.";
+"game.hintDetail" = "A carta com contorno dourado é uma sugestão.";
+"game.follow" = "Segue o naipe: %@. As cartas disponíveis estão iluminadas.";
+"game.cut" = "Não tens o naipe de saída. Joga trunfo: %@.";
+"game.choose" = "Toca numa carta para a jogar.";
+"game.yourHand" = "A tua mão";
+"game.hint" = "Sugestão";
+"menu.tagline" = "Uma mesa. Duas equipas. 120 pontos.";
+"game.hiddenCard" = "Carta virada para baixo";
+"game.draw" = "Empate: 60 a 60";

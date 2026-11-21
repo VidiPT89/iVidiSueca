@@ -41,6 +41,9 @@ final class GameViewModel: ObservableObject {
     @Published private(set) var dealingStage: DealingStage?
     @Published var invalidMoveAttempt: Card?
 
+    @Published private(set) var isPaused = false
+    private var pendingTask: Task<Void, Never>?
+
     private var settings: SettingsViewModel?
     private var state: GameState?
     private var dealer: PlayerPosition = .west
@@ -66,11 +69,41 @@ final class GameViewModel: ObservableObject {
     }
 
     func returnToMenu() {
+        pendingTask?.cancel()
+        isPaused = false
+        dealingStage = nil
         phase = .menu
         handResult = nil
     }
 
+    func setPaused(_ paused: Bool) {
+        isPaused = paused
+    }
+
+    var suggestedCard: Card? {
+        guard phase == .playing, currentPlayerTurn == .south, let state,
+              !humanLegalMoves.isEmpty else { return nil }
+        let context = BotContext(position: .south, trump: trumpSuit, currentTrick: currentTrick,
+                                 completedTricks: completedTricks, teamAPoints: teamAPoints,
+                                 teamBPoints: teamBPoints, cardsRemainingInOthersHands: state.hand(for: .south).count)
+        return HardBotStrategy().chooseCard(from: humanLegalMoves, hand: state.hand(for: .south), context: context)
+    }
+
+    /// Pausing freezes the remaining delay, including distribution and trick collection.
+    private func wait(seconds: Double) async -> Bool {
+        var remaining = seconds
+        while remaining > 0 || isPaused {
+            do { try await Task.sleep(nanoseconds: 50_000_000) }
+            catch { return false }
+            if !isPaused { remaining -= 0.05 }
+        }
+        return !Task.isCancelled
+    }
+
     private func beginHand() {
+        pendingTask?.cancel()
+        isPaused = false
+        invalidMoveAttempt = nil
         let result = DealerService.deal(dealer: dealer)
         let firstToPlay = dealer.next
         let newState = GameState(players: result.players, trumpSuit: result.trumpSuit, trumpCard: result.trumpCard,
@@ -93,14 +126,14 @@ final class GameViewModel: ObservableObject {
     }
 
     private func runDealingSequence(finalHands: [PlayerPosition: [Card]], trumpCard: Card) {
-        Task {
+        pendingTask = Task {
             guard self.phase == .dealing else { return }
             withAnimation(.spring(response: 0.5, dampingFraction: 0.65)) {
                 self.dealingStage = .revealTrump
                 self.trumpCard = trumpCard
             }
             SoundPlayer.play(.trickWin)
-            try? await Task.sleep(nanoseconds: 900_000_000)
+            guard await self.wait(seconds: 0.9) else { return }
 
             guard self.phase == .dealing else { return }
             withAnimation(.easeInOut(duration: 0.2)) {
@@ -117,14 +150,14 @@ final class GameViewModel: ObservableObject {
                     }
                 }
                 SoundPlayer.play(.cardPlay)
-                try? await Task.sleep(nanoseconds: 65_000_000)
+                guard await self.wait(seconds: 0.065) else { return }
             }
 
             guard self.phase == .dealing else { return }
             withAnimation(.spring(response: 0.45, dampingFraction: 0.7)) {
                 self.dealingStage = .announceLeader
             }
-            try? await Task.sleep(nanoseconds: 1_100_000_000)
+            guard await self.wait(seconds: 1.1) else { return }
 
             guard self.phase == .dealing else { return }
             withAnimation(.easeOut(duration: 0.25)) {
@@ -136,7 +169,7 @@ final class GameViewModel: ObservableObject {
     }
 
     func playHumanCard(_ card: Card) {
-        guard phase == .playing, currentPlayerTurn == .south, let state else { return }
+        guard !isPaused, phase == .playing, currentPlayerTurn == .south, let state else { return }
         guard RulesEngine.isLegal(card, hand: state.hand(for: .south), trick: state.currentTrick, trump: state.trumpSuit) else {
             invalidMoveAttempt = card
             UINotificationFeedbackGenerator().notificationOccurred(.warning)
@@ -153,6 +186,7 @@ final class GameViewModel: ObservableObject {
         state.remove(card, from: position)
         state.currentTrick.play(card, by: position)
         handsByPosition[position] = state.hand(for: position)
+        invalidMoveAttempt = nil
         currentTrick = state.currentTrick
 
         if state.currentTrick.isComplete {
@@ -179,8 +213,8 @@ final class GameViewModel: ObservableObject {
         UINotificationFeedbackGenerator().notificationOccurred(.success)
         SoundPlayer.play(.trickWin)
 
-        Task {
-            try? await Task.sleep(nanoseconds: 900_000_000)
+        pendingTask = Task {
+            guard await self.wait(seconds: 0.9) else { return }
             self.state?.currentTrick = Trick()
             self.currentTrick = Trick()
             self.currentPlayerTurn = winner
@@ -219,9 +253,9 @@ final class GameViewModel: ObservableObject {
                                   completedTricks: state.completedTricks, teamAPoints: state.teamAPoints,
                                   teamBPoints: state.teamBPoints, cardsRemainingInOthersHands: hand.count)
 
-        Task {
+        pendingTask = Task {
             let delay = Double.random(in: speedRange)
-            try? await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
+            guard await self.wait(seconds: delay) else { return }
             guard self.phase == .playing, self.currentPlayerTurn == position else { return }
             let card = strategy.chooseCard(from: legalMoves, hand: hand, context: context)
             self.play(card, by: position)

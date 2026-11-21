@@ -27,23 +27,26 @@ struct CardView: View {
                         )
                     )
 
-                VStack {
-                    HStack {
-                        pip
-                        Spacer()
-                    }
-                    Spacer()
-                    Image(systemName: suitSystemImage)
-                        .font(.system(size: width * 0.36))
+                ZStack {
+                    if [.king, .queen, .jack].contains(card.rank) {
+                        VStack(spacing: width * 0.02) {
+                            Image(systemName: card.rank == .king ? "crown.fill" : card.rank == .queen ? "crown" : "shield.lefthalf.filled")
+                                .font(.system(size: width * 0.28, weight: .light))
+                            Image(systemName: suitSystemImage).font(.system(size: width * 0.2))
+                        }
                         .foregroundStyle(suitGradient)
-                        .shadow(color: suitColor.opacity(0.25), radius: 1, y: 1)
-                    Spacer()
-                    HStack {
-                        Spacer()
-                        pip.rotationEffect(.degrees(180))
+                    } else {
+                        Image(systemName: suitSystemImage)
+                            .font(.system(size: width * (card.rank == .ace ? 0.42 : 0.32)))
+                            .foregroundStyle(suitGradient)
                     }
+                    VStack {
+                        HStack { pip; Spacer() }
+                        Spacer()
+                        HStack { Spacer(); pip.rotationEffect(.degrees(180)) }
+                    }
+                    .padding(width * 0.09)
                 }
-                .padding(width * 0.1)
             } else {
                 LinearGradient(
                     colors: [Color.white.opacity(0.08), .clear],
@@ -63,14 +66,16 @@ struct CardView: View {
             }
         }
         .frame(width: width, height: height)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(faceUp ? "\(card.displayLabel), \(L.t(card.suit.nameKey))" : L.t("game.hiddenCard"))
     }
 
     private var pip: some View {
         VStack(spacing: 0) {
             Text(card.displayLabel)
-                .font(.system(size: width * 0.26, weight: .bold, design: .rounded))
+                .font(.system(size: width * 0.25, weight: .bold, design: .serif))
             Image(systemName: suitSystemImage)
-                .font(.system(size: width * 0.18))
+                .font(.system(size: width * 0.15))
         }
         .foregroundColor(suitColor)
     }

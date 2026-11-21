@@ -88,3 +88,28 @@
 "history.empty" = "No tricks played yet.";
 "history.trickNumber" = "Trick %d";
 "history.points" = "pts";
+
+/* Table guidance and controls */
+"game.round" = "Trick %d of 10";
+"game.target" = "Target: 61 points";
+"game.pause" = "Pause game";
+"game.paused" = "Game paused";
+"game.resume" = "Resume game";
+"game.leaveTitle" = "Leave this hand?";
+"game.leave" = "Return to menu";
+"game.leaveMessage" = "Progress in this hand will be lost.";
+"game.cancel" = "Cancel";
+"game.trickWinner" = "%@ won · %d pts";
+"game.yourTurn" = "Your turn";
+"game.thinking" = "%@ is playing";
+"game.nextTrick" = "The trick winner leads next.";
+"game.partnerInfo" = "Your partner sits opposite you.";
+"game.hintDetail" = "The gold outline marks a suggested card.";
+"game.follow" = "Follow suit: %@. Available cards are highlighted.";
+"game.cut" = "You have no cards of the lead suit. Play trump: %@.";
+"game.choose" = "Tap a card to play it.";
+"game.yourHand" = "Your hand";
+"game.hint" = "Hint";
+"menu.tagline" = "One table. Two teams. 120 points.";
+"game.hiddenCard" = "Face-down card";
+"game.draw" = "Draw: 60 each";
