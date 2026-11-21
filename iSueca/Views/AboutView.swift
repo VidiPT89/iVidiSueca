@@ -8,11 +8,12 @@ struct AboutView: View {
             VStack(spacing: 24) {
                 Spacer()
 
-                RoundedRectangle(cornerRadius: 18)
-                    .fill(LinearGradient(colors: [.brandPrimary, .brandSecondary], startPoint: .topLeading, endPoint: .bottomTrailing))
-                    .frame(width: 72, height: 96)
-                    .overlay(Text("S").font(.system(size: 42, weight: .heavy, design: .rounded)).foregroundColor(.white))
+                Image("AppLogo")
+                    .resizable()
+                    .frame(width: 96, height: 96)
+                    .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
                     .shadow(color: .brandPrimary.opacity(0.4), radius: 14, y: 6)
+                    .accessibilityHidden(true)
 
                 Text(L.t("about.developedBy"))
                     .font(.subheadline)
@@ -30,6 +31,11 @@ struct AboutView: View {
                     if let githubURL = URL(string: "https://github.com/VidiPT89/") {
                         Link(destination: githubURL) {
                             linkRow(icon: "chevron.left.slash.chevron.right", title: L.t("about.github"), value: "VidiPT89")
+                        }
+                    }
+                    if let privacyURL = URL(string: "https://github.com/VidiPT89/iSueca/blob/main/PRIVACY.md") {
+                        Link(destination: privacyURL) {
+                            linkRow(icon: "hand.raised.fill", title: L.t("about.privacy"), value: "")
                         }
                     }
                 }

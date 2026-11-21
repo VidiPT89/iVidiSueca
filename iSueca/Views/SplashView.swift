@@ -42,17 +42,12 @@ struct SplashView: View {
                             .scaleEffect(glowScale)
                             .opacity(glowOpacity)
 
-                        RoundedRectangle(cornerRadius: 20)
-                            .fill(
-                                LinearGradient(colors: [.brandPrimary, .brandSecondary], startPoint: .topLeading, endPoint: .bottomTrailing)
-                            )
-                            .frame(width: 96, height: 128)
-                            .overlay(
-                                Text("S")
-                                    .font(.system(size: 58, weight: .heavy, design: .rounded))
-                                    .foregroundColor(.white)
-                            )
+                        Image("AppLogo")
+                            .resizable()
+                            .frame(width: 132, height: 132)
+                            .clipShape(RoundedRectangle(cornerRadius: 30, style: .continuous))
                             .shadow(color: Color.brandPrimary.opacity(0.5), radius: 18, y: 8)
+                            .accessibilityHidden(true)
                     }
                     .scaleEffect(markScale)
                     .opacity(markOpacity)

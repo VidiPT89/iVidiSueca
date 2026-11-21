@@ -7,7 +7,7 @@
 "menu.about" = "Sobre";
 
 /* Stats */
-"stats.record" = "%d vitórias em %d mãos";
+"stats.record" = "Vitórias: %d de %d mãos";
 
 /* Settings */
 "settings.title" = "Definições";
@@ -34,6 +34,7 @@
 "about.author" = "David Arsénio Martins";
 "about.website" = "Site";
 "about.github" = "GitHub";
+"about.privacy" = "Política de privacidade";
 
 /* Splash */
 "splash.developedBy" = "Desenvolvido por";
