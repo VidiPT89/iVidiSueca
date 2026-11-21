@@ -32,7 +32,7 @@ struct GameView: View {
                 .padding(.horizontal, 6)
 
                 table(compact: compact)
-                    .frame(maxWidth: 760)
+                    .frame(maxWidth: 900)
                     .frame(maxHeight: .infinity)
 
                 VStack(spacing: 6) {
@@ -50,7 +50,7 @@ struct GameView: View {
                 .accessibilityElement(children: .combine)
                 .accessibilityIdentifier("game.status")
 
-                humanHand(width: min(proxy.size.width - 24, 620), compact: compact)
+                humanHand(width: min(proxy.size.width - 24, proxy.size.width > 900 ? 820 : 620), compact: compact)
             }
             .padding(.horizontal, 12)
             .padding(.vertical, 8)
@@ -111,7 +111,7 @@ struct GameView: View {
 
     private func table(compact: Bool) -> some View {
         GeometryReader { geo in
-            let cardWidth = min(compact ? 48.0 : (geo.size.width > 600 ? 90.0 : 64.0), geo.size.width * 0.16)
+            let cardWidth = min(compact ? 48.0 : (geo.size.width > 800 ? 124.0 : geo.size.width > 600 ? 90.0 : 64.0), geo.size.width * 0.16)
             ZStack {
                 RoundedRectangle(cornerRadius: 36)
                     .fill(RadialGradient(colors: [Color(red: 0.12, green: 0.32, blue: 0.28), Color(red: 0.035, green: 0.15, blue: 0.13)], center: .center, startRadius: 10, endRadius: geo.size.width * 0.8))
@@ -213,7 +213,7 @@ struct GameView: View {
     private func humanHand(width: CGFloat, compact: Bool) -> some View {
         let cards = viewModel.handsByPosition[.south] ?? []
         let legal = Set(viewModel.humanLegalMoves.map(\.id))
-        let cardWidth = min(compact ? 51 : (width > 500 ? 96 : 66), (width - 32) / 5)
+        let cardWidth = min(compact ? 51 : (width > 700 ? 132 : width > 500 ? 96 : 66), (width - 32) / 5)
         return VStack(spacing: 8) {
             HStack {
                 Text(L.t("game.yourHand")).font(.caption.weight(.semibold))
@@ -252,7 +252,7 @@ struct GameView: View {
             }
             .frame(height: cardWidth * 1.38 * 2 + 8, alignment: .top)
         }
-        .frame(maxWidth: 620)
+        .frame(maxWidth: 820)
     }
 
     private var pauseOverlay: some View {
